@@ -19,7 +19,7 @@ import "../../concat-text/fonts/HankenGrotesk-Italic.ttf";
 import { Theme } from "theme/theme.slint";
 import { Bezier, Curves, Fmt, Focus, Payload } from "util.slint";
 import { EffectData } from "demo/effects-panel.slint";
-import { MediaFilter, MediaItemData, MediaKind, SourcePreview, TextPresetData } from "workspace/media-pane.slint";
+import { MediaFilter, MediaItemData, MediaKind, SourcePreview, StickerCardData, TextPresetData } from "workspace/media-pane.slint";
 import { ContextMenu, MenuItemData, MenuRow } from "primitives/context-menu.slint";
 import { ExportData, ExportDialog, ExportPhase } from "dialogs/export.slint";
 import { ModelData, SettingsData, SettingsDialog, SystemFactData } from "dialogs/settings.slint";
@@ -56,7 +56,7 @@ export {
     Curves, Fmt, Focus, Payload, Theme, Bezier, Editor, I18n,
     AppliedEntryData, AppliedParamData, CatalogueEntryData, Library, LibraryViewData, ParamFormat,
     DockDivider, DockSide, PaneKind, SeatBox,
-    EffectData, FontSearch, Meters, MediaFilter, MediaItemData, MediaKind, SourcePreview, TextPresetData,
+    EffectData, FontSearch, Meters, MediaFilter, MediaItemData, MediaKind, SourcePreview, StickerCardData, TextPresetData,
     ClipData, ClipField, ClipKeyData, ClipKind, ClipTextField, DropData, Keyframes,
     KeyEditor, KeyMarkData, KeyRowData,
     SelectedClipData, SelectedTransitionData, StageGuideData, StageItemData, TextAlignment, TimelineTabData,
@@ -66,7 +66,7 @@ export {
 }
 
 export component App inherits Window {
-    title: "Concat";
+    title: "Editor MyA";
     // The taskbar's and Alt-Tab's picture on Windows, and the window
     // list's on X11. A Mac takes its Dock icon from the bundle and ignores
     // this; the .exe's own, for Explorer, is embedded by build.rs.

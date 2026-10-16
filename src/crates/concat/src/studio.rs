@@ -66,6 +66,7 @@ use crate::panes::settings::installed;
 use crate::platform;
 use crate::prefs::Preferences;
 use crate::presets::{self, TextPreset};
+use crate::stickers::{self, Sticker};
 use crate::ui::*;
 
 /// The monitor's output sizes, matching the picker's rows.
@@ -621,6 +622,12 @@ pub struct Models {
     pub style_presets: Rc<VecModel<TextPresetData>>,
     /// The rest, by the writing they are for, for its Languages shelf.
     pub language_presets: Rc<VecModel<TextPresetData>>,
+    /// The Stickers page's pictures, published once from the loaded list.
+    pub stickers: Rc<VecModel<StickerCardData>>,
+    /// Their shelves, in the order the pictures come in.
+    pub sticker_shelves: Rc<VecModel<SharedString>>,
+    /// How many pictures each of those shelves holds.
+    pub sticker_counts: Rc<VecModel<i32>>,
     /// The families a title can be set in; see `Studio::font_families`.
     pub font_families: Rc<VecModel<SharedString>>,
     /// Those of them the font picker's search lets through.
@@ -683,6 +690,9 @@ impl Models {
             text_presets: Rc::new(VecModel::default()),
             style_presets: Rc::new(VecModel::default()),
             language_presets: Rc::new(VecModel::default()),
+            stickers: Rc::new(VecModel::default()),
+            sticker_shelves: Rc::new(VecModel::default()),
+            sticker_counts: Rc::new(VecModel::default()),
             font_families: Rc::new(VecModel::default()),
             font_matches: Rc::new(VecModel::default()),
         }
@@ -915,6 +925,11 @@ pub struct Studio {
     /// Every speaker the voice engine offers, in its own order.
     /// The looks the Text page offers; see `presets`.
     pub text_presets: Vec<TextPreset>,
+    /// The pictures the Stickers page offers, with their decoded cards;
+    /// see `stickers`.
+    pub stickers: Vec<(Sticker, slint::Image)>,
+    /// Counts sticker placements, so each is an undo step of its own.
+    sticker_count: u32,
     /// The fonts in the app's own folder - imported from the Text
     /// inspector, or brought by a preset - as (family, file), read once at
     /// start and added to as files come in. Offered to every title; a
@@ -2113,10 +2128,20 @@ impl Studio {
         }
         // The words first, so everything published from here on is in
         // the remembered language.
-        i18n::select(prefs.locale.as_deref().unwrap_or(i18n::ENGLISH), &host.dirs);
+        // Editor MyA: Spanish until the person picks another language.
+        i18n::select(prefs.locale.as_deref().unwrap_or("es"), &host.dirs);
         let languages = i18n::languages(&host.dirs);
         let recents = projects::list(&host.dirs.config);
         let text_presets = presets::all(&host.dirs);
+        let stickers = stickers::all(&host.dirs)
+            .into_iter()
+            .filter_map(|sticker| {
+                slint::Image::load_from_path(&sticker.path)
+                    .map(|card| (sticker, card))
+                    .map_err(|_| log::warn!("stickers: could not read a card"))
+                    .ok()
+            })
+            .collect();
         let mut studio = Self {
             prefs,
             library: Default::default(),
@@ -2197,6 +2222,8 @@ impl Studio {
             meters: crate::meters::MeterFeed::default(),
             voiceover: crate::panes::voiceover::VoiceoverPane::default(),
             text_presets,
+            stickers,
+            sticker_count: 0,
             installed_fonts: presets::installed_fonts(&host.dirs),
             system_fonts: Vec::new(),
             fonts_published: std::cell::Cell::new(None),
@@ -3622,6 +3649,83 @@ impl Studio {
             duration: Some(duration),
             name: name.to_owned(),
         })
+    }
+
+    /// A picture from the Stickers page, at the playhead: imported like any
+    /// file, laid on the first lane over the picture and shrunk to a
+    /// sticker's size, as one undo step. The probe runs off the window's
+    /// thread, as an import's does.
+    pub fn place_sticker(&mut self, path: &str) {
+        if self.session.is_none() {
+            return;
+        }
+        let path = path.to_owned();
+        spawn_in_project(
+            move || concat_host::media::probe(&path).map_err(|error| (path, error)),
+            |studio, _, _, probed| match probed {
+                Ok(summary) => studio.lay_sticker(summary),
+                Err((path, error)) => {
+                    log::warn!("sticker: {error}");
+                    studio.notify(&tf("studio.couldNotImport", &[&path, &error]), true);
+                }
+            },
+        );
+    }
+
+    fn lay_sticker(&mut self, summary: concat_host::media::MediaSummary) {
+        self.sticker_count += 1;
+        let gesture = format!("sticker-{}", self.sticker_count);
+        let item = summary.to_new_media();
+        let path = item.path.clone();
+        let Some(media_id) = self
+            .apply_within(&gesture, Command::AddMedia { item })
+            .or_else(|| {
+                self.project()
+                    .media
+                    .iter()
+                    .find(|item| item.path == path)
+                    .map(|item| item.id.clone())
+            })
+        else {
+            return;
+        };
+        let start = f64::from(self.playhead.max(0.0));
+        let track_id = match stickers::lane_for(self.timeline(), start) {
+            Some(id) => id,
+            None => match self.apply_within(&gesture, Command::AddTrack { bottom: false }) {
+                Some(id) => id,
+                None => return,
+            },
+        };
+        let Some(clip_id) = self.apply_within(
+            &gesture,
+            Command::AddClip {
+                media_id,
+                track_id,
+                start,
+                ripple: false,
+            },
+        ) else {
+            return;
+        };
+        self.apply_within(
+            &gesture,
+            Command::SetClipTransform {
+                clip_id: clip_id.clone(),
+                scale: Some(stickers::PLACED_SCALE),
+                offset_x: None,
+                offset_y: None,
+                rotation: None,
+                stretch_x: None,
+                stretch_y: None,
+            },
+        );
+        // One step for the sticker, and the next placement a step of its own.
+        if let Some(session) = self.session.as_mut() {
+            session.end_gesture();
+        }
+        self.selection = vec![clip_id];
+        self.request_preview();
     }
 
     /// The selected clip's id, when exactly one is selected.
@@ -9450,6 +9554,33 @@ impl Studio {
             cards.iter().filter(|card| !latin(card)).cloned().collect(),
         );
         sync(&models.text_presets, cards);
+
+        // The Stickers page's pictures and their shelves.
+        let held: Vec<Sticker> = self.stickers.iter().map(|(sticker, _)| sticker.clone()).collect();
+        let shelves = stickers::shelves(&held);
+        sync(
+            &models.sticker_shelves,
+            shelves.iter().map(|shelf| SharedString::from(shelf.as_str())).collect(),
+        );
+        let mut counts = vec![0_i32; shelves.len()];
+        let cards = self
+            .stickers
+            .iter()
+            .map(|(sticker, card)| {
+                let shelf = shelves.iter().position(|shelf| *shelf == sticker.shelf).unwrap_or(0);
+                let order = counts[shelf];
+                counts[shelf] += 1;
+                StickerCardData {
+                    path: sticker.path.to_string_lossy().as_ref().into(),
+                    label: sticker.label.as_str().into(),
+                    shelf: shelf as i32,
+                    order,
+                    card: card.clone(),
+                }
+            })
+            .collect();
+        sync(&models.stickers, cards);
+        sync(&models.sticker_counts, counts);
 
         // The bin.
         // The Media shelves count the imports; what the editor made is

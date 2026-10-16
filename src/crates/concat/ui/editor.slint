@@ -8,7 +8,7 @@ import {
 import {
     CurveData, CurveGroupData, WheelData, WheelGroupData,
 } from "inspector/grading.slint";
-import { MediaFilter, MediaItemData, TextPresetData } from "workspace/media-pane.slint";
+import { MediaFilter, MediaItemData, StickerCardData, TextPresetData } from "workspace/media-pane.slint";
 import { DockDivider, DockSide, SeatBox } from "dock.slint";
 import { PaneKind } from "workspace/pane-switcher.slint";
 import { MenuItemData } from "primitives/context-menu.slint";
@@ -114,6 +114,13 @@ export global Editor {
     /// The Stickers page placed a shape: which figure, and what to call
     /// the clip, in the interface's language.
     callback library-add-shape(shape: string, label: string);
+    /// The Stickers page's pictures, published once, and their shelves.
+    in-out property <[StickerCardData]> stickers;
+    in-out property <[string]> sticker-shelves;
+    in-out property <[int]> sticker-counts;
+    /// The Stickers page placed a picture: the file to import and lay
+    /// over the picture at the playhead.
+    callback library-add-sticker(path: string);
     callback library-apply-effect(effect-id: string);
     callback library-apply-transition(transition-id: string);
     /// Filters page: lay the look down as a layer at the playhead.

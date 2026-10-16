@@ -1637,6 +1637,107 @@ export component ShapeGrid inherits Rectangle {
     }
 }
 
+/// One picture on a sticker shelf: the file it imports, the name under
+/// its card, which shelf it is on, and the card itself.
+export struct StickerCardData {
+    path: string,
+    label: string,
+    shelf: int,
+    /// Its place on its shelf, from 0.
+    order: int,
+    card: image,
+}
+
+// One picture sticker, as a card: the image fitted on a checker-free tile,
+// the name underneath; a click places it at the playhead.
+component StickerCard inherits Rectangle {
+    in property <StickerCardData> sticker;
+
+    callback placed();
+
+    touch := TouchArea {
+        mouse-cursor: pointer;
+        clicked => { root.placed(); }
+
+        tile := Rectangle {
+            y: 0;
+            height: root.width;
+            border-radius: Theme.r;
+            background: Theme.field;
+            border-width: 1px;
+            border-color: touch.has-hover ? Theme.line-strong : Theme.line;
+
+            Image {
+                x: parent.width * 0.1;
+                y: parent.height * 0.1;
+                width: parent.width * 0.8;
+                height: parent.height * 0.8;
+                source: root.sticker.card;
+                image-fit: contain;
+            }
+
+            if touch.has-hover: Rectangle {
+                x: parent.width - self.width - 4px;
+                y: parent.height - self.height - 4px;
+                width: 20px;
+                height: 20px;
+                border-radius: Theme.r-xs;
+                background: Theme.scrim;
+
+                Icon {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    glyph: Glyph.plus;
+                    size: 11px;
+                    tint: Theme.on-scrim;
+                }
+            }
+        }
+
+        Text {
+            x: 0;
+            y: tile.height + 4px;
+            width: root.width;
+            height: 14px;
+            text: root.sticker.label;
+            color: Theme.fg-muted;
+            font-size: Theme.fs-sm;
+            vertical-alignment: center;
+            overflow: elide;
+        }
+    }
+}
+
+// A shelf of picture stickers, laid out like the Shapes shelf.
+export component StickerGrid inherits Rectangle {
+    in property <[StickerCardData]> stickers;
+    in property <int> shelf;
+    /// How many pictures the shelf holds.
+    in property <int> count;
+    callback placed(path: string);
+
+    property <length> gap: 8px;
+    property <length> min-card: 88px;
+    property <int> cols: Math.max(1,
+        Math.floor((root.width + root.gap) / (root.min-card + root.gap)));
+    property <length> card-w: (root.width - (root.cols - 1) * root.gap) / root.cols;
+    property <length> card-h: root.card-w + 4px + 14px;
+    property <int> rows: Math.ceil(root.count / root.cols);
+
+    height: root.rows > 0 ? root.rows * (root.card-h + root.gap) - root.gap : 0px;
+
+    for entry in root.stickers: StickerCard {
+        visible: entry.shelf == root.shelf;
+        x: Math.mod(entry.order, root.cols) * (root.card-w + root.gap);
+        y: Math.floor(entry.order / root.cols) * (root.card-h + root.gap);
+        width: root.card-w;
+        height: root.card-h;
+        sticker: entry;
+
+        placed => { root.placed(entry.path); }
+    }
+}
+
 // ── the pane ─────────────────────────────────────────────────────────────────
 
 // Centred placeholder for a page with nothing on it.
@@ -1730,6 +1831,12 @@ export component MediaPane inherits Rectangle {
     /// Stickers page: add the figure `shape` names at the playhead, as a
     /// clip called `label`.
     callback add-shape(shape: string, label: string);
+    /// Stickers page: the picture shelves, and a picture placed.
+    in property <[StickerCardData]> stickers;
+    in property <[string]> sticker-shelves;
+    /// How many pictures each of those shelves holds.
+    in property <[int]> sticker-counts;
+    callback add-sticker(path: string);
     /// Catalogue pages: apply to the selected clip; Rust validates & explains.
     callback apply-effect(effect-id: string);
     callback apply-transition(transition-id: string);
@@ -1769,6 +1876,8 @@ export component MediaPane inherits Rectangle {
     /// 0 = Titles, 1 = Styles, 2 = Languages
     property <int> text-category;
     property <bool> stickers-open: true;
+    /// The Stickers page's shelf: 0 is Shapes, then one per picture shelf.
+    property <int> sticker-shelf;
     property <bool> transitions-open: true;
     property <bool> effects-open: true;
     property <bool> filters-open: true;
@@ -2125,7 +2234,17 @@ export component MediaPane inherits Rectangle {
                         if root.stickers-open: CategoryRow {
                             height: 24px;
                             label: I18n.t("mediaPane.shapes");
-                            current: true;
+                            current: root.sticker-shelf == 0;
+                            clicked => { root.sticker-shelf = 0; }
+                        }
+                        if root.stickers-open: VerticalLayout {
+                            spacing: 1px;
+                            for label[index] in root.sticker-shelves: CategoryRow {
+                                height: 24px;
+                                label: label;
+                                current: root.sticker-shelf == index + 1;
+                                clicked => { root.sticker-shelf = index + 1; }
+                            }
                         }
                     }
 
@@ -2396,9 +2515,16 @@ export component MediaPane inherits Rectangle {
                 if root.tab == 2: HorizontalLayout {
                     padding: 8px;
 
-                    ShapeGrid {
+                    if root.sticker-shelf == 0: ShapeGrid {
                         horizontal-stretch: 1;
                         placed(shape, label) => { root.add-shape(shape, label); }
+                    }
+                    if root.sticker-shelf > 0: StickerGrid {
+                        horizontal-stretch: 1;
+                        stickers: root.stickers;
+                        shelf: root.sticker-shelf - 1;
+                        count: root.sticker-counts[root.sticker-shelf - 1];
+                        placed(path) => { root.add-sticker(path); }
                     }
                 }
 

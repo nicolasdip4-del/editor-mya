@@ -139,6 +139,10 @@ export component Seat inherits Rectangle {
             transition-groups: Editor.transition-groups;
             add-text(preset) => { Editor.library-add-text(preset); }
             add-shape(shape, label) => { Editor.library-add-shape(shape, label); }
+            stickers: Editor.stickers;
+            sticker-shelves: Editor.sticker-shelves;
+            sticker-counts: Editor.sticker-counts;
+            add-sticker(path) => { Editor.library-add-sticker(path); }
             apply-effect(id) => { Editor.library-apply-effect(id); }
             apply-transition(id) => { Editor.library-apply-transition(id); }
             apply-filter(id, label) => { Editor.library-apply-filter(id, label); }

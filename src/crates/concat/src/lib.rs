@@ -50,6 +50,7 @@ pub use platform::{ExportPublisher, FilePicker, install_export_publisher, instal
 mod panes;
 mod prefs;
 mod presets;
+mod stickers;
 mod source;
 mod studio;
 mod sysinfo;
@@ -348,6 +349,9 @@ fn start(project: Option<std::path::PathBuf>, smoke: bool) -> Result<(), slint::
         editor.set_text_presets(ModelRc::from(models.text_presets.clone()));
         editor.set_style_presets(ModelRc::from(models.style_presets.clone()));
         editor.set_language_presets(ModelRc::from(models.language_presets.clone()));
+        editor.set_stickers(ModelRc::from(models.stickers.clone()));
+        editor.set_sticker_shelves(ModelRc::from(models.sticker_shelves.clone()));
+        editor.set_sticker_counts(ModelRc::from(models.sticker_counts.clone()));
         editor.set_font_families(ModelRc::from(models.font_families.clone()));
         app.global::<FontSearch>()
             .set_matches(ModelRc::from(models.font_matches.clone()));
@@ -782,6 +786,10 @@ fn start(project: Option<std::path::PathBuf>, smoke: bool) -> Result<(), slint::
             state.place_at_playhead(&format!("shape:{shape}:{label}"));
         }
     ));
+    // A picture from the Stickers page, imported and laid over the picture.
+    editor.on_library_add_sticker(on_window!(|state, path: SharedString| {
+        state.place_sticker(path.as_str());
+    }));
     // A filter is a layer over a span of the timeline; an effect goes on
     // the selected clip's chain, and audio on the sound's.
     editor.on_library_apply_filter(on_window!(

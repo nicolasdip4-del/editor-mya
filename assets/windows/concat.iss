@@ -32,23 +32,23 @@
 [Setup]
 ; One id for the life of the product, so an install over an older one is
 ; an upgrade and not a second copy.
-AppId={{7B1E5C3A-3B9E-4F0B-9C6D-2F1D0C0A0C47}
-AppName=Concat
+AppId={{4D1A7E2B-9C3F-4E8A-B5D6-0F2E7C9A1B38}
+AppName=Editor MyA
 AppVersion={#Version}
-AppVerName=Concat {#Version}
-AppPublisher=Concat contributors
-AppPublisherURL=https://github.com/jub0t/Concat
-AppSupportURL=https://github.com/jub0t/Concat/issues
-AppUpdatesURL=https://github.com/jub0t/Concat/releases
-DefaultDirName={autopf}\Concat
-DefaultGroupName=Concat
+AppVerName=Editor MyA {#Version}
+AppPublisher=MyA Equipamientos Comerciales
+AppPublisherURL=https://github.com/nicolasdip4-del/editor-mya
+AppSupportURL=https://github.com/nicolasdip4-del/editor-mya/issues
+AppUpdatesURL=https://github.com/nicolasdip4-del/editor-mya/releases
+DefaultDirName={autopf}\Editor MyA
+DefaultGroupName=Editor MyA
 DisableProgramGroupPage=yes
 LicenseFile=..\..\LICENSE
 OutputDir={#Out}
 OutputBaseFilename=Concat-{#Version}-windows-{#Suffix}-setup
 SetupIconFile=..\icons\concat.ico
 UninstallDisplayIcon={app}\concat.ico
-UninstallDisplayName=Concat
+UninstallDisplayName=Editor MyA
 Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern
@@ -101,15 +101,14 @@ Name: "urdu"; MessagesFile: "languages\Urdu.isl"
 Name: "vietnamese"; MessagesFile: "languages\Vietnamese.isl"
 
 [Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
 Source: "{#Stage}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\icons\concat.ico"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{autoprograms}\Concat"; Filename: "{app}\concat.exe"; IconFilename: "{app}\concat.ico"
-Name: "{autodesktop}\Concat"; Filename: "{app}\concat.exe"; IconFilename: "{app}\concat.ico"; Tasks: desktopicon
+Name: "{autoprograms}\Editor MyA"; Filename: "{app}\concat.exe"; IconFilename: "{app}\concat.ico"
+Name: "{autodesktop}\Editor MyA"; Filename: "{app}\concat.exe"; IconFilename: "{app}\concat.ico"
 
 [Run]
-Filename: "{app}\concat.exe"; Description: "{cm:LaunchProgram,Concat}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\concat.exe"; Description: "{cm:LaunchProgram,Editor MyA}"; Flags: nowait postinstall skipifsilent

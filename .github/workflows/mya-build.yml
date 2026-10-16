@@ -1,0 +1,17 @@
+name: Editor MyA - instaladores
+
+# Arma los instaladores de Editor MyA (Windows, Linux y macOS) a pedido,
+# desde la pestaña Actions: "Run workflow". Los archivos quedan como
+# artefactos de la corrida, para bajarlos y probarlos antes de publicar
+# una versión. Usa el mismo build-app.yml que las versiones oficiales.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Instaladores
+    uses: ./.github/workflows/build-app.yml
+    secrets: inherit
