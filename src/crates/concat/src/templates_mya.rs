@@ -96,6 +96,22 @@ const FILES: &[(&str, &[u8])] = &[
         "MyA - Producto en oferta/template.json",
         include_bytes!("../templates-mya/MyA - Producto en oferta/template.json"),
     ),
+    (
+        "MyA - Video rápido/assets/01 Logo M&A.png",
+        include_bytes!("../templates-mya/MyA - Video rápido/assets/01 Logo M&A.png"),
+    ),
+    (
+        "MyA - Video rápido/assets/25 Consultá por WhatsApp.png",
+        include_bytes!("../templates-mya/MyA - Video rápido/assets/25 Consultá por WhatsApp.png"),
+    ),
+    (
+        "MyA - Video rápido/poster.jpg",
+        include_bytes!("../templates-mya/MyA - Video rápido/poster.jpg"),
+    ),
+    (
+        "MyA - Video rápido/template.json",
+        include_bytes!("../templates-mya/MyA - Video rápido/template.json"),
+    ),
 ];
 
 /// What a closing card says while Settings has no name or number yet: a
@@ -174,7 +190,7 @@ mod tests {
 
         install(&dirs, "Ana \"La\" Pérez", "381 555-0000");
         let listed = concat_host::templates::list(&dirs.config);
-        assert_eq!(listed.len(), 3);
+        assert_eq!(listed.len(), 4);
         let offer = std::fs::read_to_string(
             templates_dir(&dirs.config).join("MyA - Producto en oferta/template.json"),
         )

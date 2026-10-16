@@ -616,6 +616,8 @@ pub struct Models {
     pub seats: Rc<VecModel<SeatBox>>,
     pub dividers: Rc<VecModel<DockDivider>>,
     pub recents: Rc<VecModel<RecentProjectData>>,
+    /// Editor MyA: the MyA designs the start screen offers as cards.
+    pub start_designs: Rc<VecModel<StartDesignData>>,
     /// The Text page's presets, published once from the loaded list.
     pub text_presets: Rc<VecModel<TextPresetData>>,
     /// The Latin ones, for the Text page's Styles shelf.
@@ -687,6 +689,7 @@ impl Models {
             seats: Rc::new(VecModel::default()),
             dividers: Rc::new(VecModel::default()),
             recents: Rc::new(VecModel::default()),
+            start_designs: Rc::new(VecModel::default()),
             text_presets: Rc::new(VecModel::default()),
             style_presets: Rc::new(VecModel::default()),
             language_presets: Rc::new(VecModel::default()),
@@ -928,6 +931,9 @@ pub struct Studio {
     /// The pictures the Stickers page offers, with their decoded cards;
     /// see `stickers`.
     pub stickers: Vec<(Sticker, slint::Image)>,
+    /// Editor MyA: the MyA designs for the start screen, as (folder,
+    /// name, poster), read once the templates are installed.
+    pub designs: Vec<(String, String, slint::Image)>,
     /// Counts sticker placements, so each is an undo step of its own.
     sticker_count: u32,
     /// The fonts in the app's own folder - imported from the Text
@@ -2135,6 +2141,16 @@ impl Studio {
         let text_presets = presets::all(&host.dirs);
         let stickers = Self::load_stickers(&host.dirs);
         crate::templates_mya::install(&host.dirs, &prefs.seller_name, &prefs.seller_whatsapp);
+        let designs = crate::quick_start::designs(&host.dirs)
+            .into_iter()
+            .map(|info| {
+                let poster =
+                    crate::host::image_at(&std::path::Path::new(&info.path).join("poster.jpg"))
+                        .unwrap_or_default();
+                let name = info.name.trim_start_matches("MyA · ").to_owned();
+                (info.path, name, poster)
+            })
+            .collect();
         let mut studio = Self {
             prefs,
             library: Default::default(),
@@ -2216,6 +2232,7 @@ impl Studio {
             voiceover: crate::panes::voiceover::VoiceoverPane::default(),
             text_presets,
             stickers,
+            designs,
             sticker_count: 0,
             installed_fonts: presets::installed_fonts(&host.dirs),
             system_fonts: Vec::new(),
@@ -9551,6 +9568,17 @@ impl Studio {
             failed: self.toast.failed,
         });
         app.set_start(self.start.data());
+        sync(
+            &models.start_designs,
+            self.designs
+                .iter()
+                .map(|(path, name, poster)| StartDesignData {
+                    path: path.as_str().into(),
+                    name: name.as_str().into(),
+                    poster: poster.clone(),
+                })
+                .collect(),
+        );
         sync(
             &models.recents,
             self.recents

@@ -124,7 +124,8 @@ impl Default for ExportPane {
             folder: home_folder("Movies"),
             resolution: 2,
             rate: 0,
-            quality: 1,
+            // Editor MyA: the high tier unless the seller asks for less.
+            quality: 0,
             social: None,
             codec: 0,
             ten_bit: false,
@@ -144,9 +145,11 @@ impl Default for ExportPane {
 }
 
 impl ExportPane {
-    /// Editor MyA: what each "Para redes" card sets. All H.264, the one
-    /// every phone and every network plays; a WhatsApp status is held to a
-    /// fixed 2.5 Mbps so a minute stays near 20 MB.
+    /// Editor MyA: what each "Para redes" card sets. Every one is the
+    /// high tier in H.264, the codec every phone and network plays: the
+    /// networks recompress what they are given, so they are given the best
+    /// file there is. The cards differ in name only, so a seller picks by
+    /// where the video is going rather than by encoder settings.
     fn choose_social(&mut self, index: usize) {
         let h264 = concat_media::VideoCodec::ALL
             .iter()
@@ -155,22 +158,8 @@ impl ExportPane {
         self.codec = h264;
         self.ten_bit = false;
         self.sdr = true;
-        match index {
-            0 => {
-                self.quality = 0;
-                self.advanced = false;
-            }
-            1 => {
-                self.quality = 2;
-                self.advanced = true;
-                self.rate_mode = 1;
-                self.bitrate = 2_500;
-            }
-            _ => {
-                self.quality = 1;
-                self.advanced = false;
-            }
-        }
+        self.quality = 0;
+        self.advanced = false;
         self.social = Some(index.min(2));
     }
 

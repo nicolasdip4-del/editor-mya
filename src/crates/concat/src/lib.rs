@@ -50,6 +50,7 @@ pub use platform::{ExportPublisher, FilePicker, install_export_publisher, instal
 mod panes;
 mod prefs;
 mod presets;
+mod quick_start;
 mod source;
 mod stickers;
 mod studio;
@@ -347,6 +348,7 @@ fn start(project: Option<std::path::PathBuf>, smoke: bool) -> Result<(), slint::
         editor.set_seats(ModelRc::from(models.seats.clone()));
         editor.set_dividers(ModelRc::from(models.dividers.clone()));
         app.set_recents(ModelRc::from(models.recents.clone()));
+        app.set_start_designs(ModelRc::from(models.start_designs.clone()));
         editor.set_text_presets(ModelRc::from(models.text_presets.clone()));
         editor.set_style_presets(ModelRc::from(models.style_presets.clone()));
         editor.set_language_presets(ModelRc::from(models.language_presets.clone()));
@@ -575,6 +577,10 @@ fn start(project: Option<std::path::PathBuf>, smoke: bool) -> Result<(), slint::
     app.on_start_open(on_window!(|state| {
         state.handle(Msg::Start(StartMsg::Open));
     }));
+    // Editor MyA: a design's card, and "Video rápido", each ask for the
+    // videos on a turn of their own; see quick_start.
+    app.on_start_design(|path: SharedString| quick_start::start_design(path.to_string()));
+    app.on_start_quick(quick_start::start_quick);
     app.on_start_open_recent(on_window!(|state, path: SharedString| {
         state.handle(Msg::Start(StartMsg::OpenRecent(path.to_string())));
     }));

@@ -1022,8 +1022,193 @@ component ProjectsGrid inherits Rectangle {
 
 // ── the screen ───────────────────────────────────────────────────────────
 
+// ── Editor MyA: the ways in ──────────────────────────────────────────────
+
+/// One MyA design on the start screen: its template folder, its name, and
+/// the poster it is recognised by.
+export struct StartDesignData {
+    path: string,
+    name: string,
+    poster: image,
+}
+
+// The MyA blue and what reads on it: white for words, and a light tint of
+// the blue for the line under them (6.6:1 on the blue).
+global Brand {
+    out property <color> blue: #004F9E;
+    out property <color> blue-lit: #0B5FB3;
+    out property <color> on-blue: #FFFFFF;
+    out property <color> on-blue-soft: #DCE8F5;
+}
+
+// A design, as its poster: the card is the action - a click asks for the
+// videos and makes the project.
+component DesignCard inherits Rectangle {
+    in property <StartDesignData> design;
+    in property <bool> enabled: true;
+    callback chosen();
+
+    property <bool> lit: touch.has-hover && root.enabled;
+
+    poster := Rectangle {
+        y: 0;
+        height: root.width * 16 / 9;
+        border-radius: Theme.r;
+        clip: true;
+        background: #002F60;
+        border-width: root.lit ? 2px : 1px;
+        border-color: root.lit ? #FFFFFF : #FFFFFF40;
+
+        Image {
+            width: parent.width;
+            height: parent.height;
+            source: root.design.poster;
+            image-fit: cover;
+        }
+
+        animate border-color { duration: 120ms; easing: cubic-bezier(0.4, 0, 0.2, 1); }
+    }
+
+    Text {
+        x: 0;
+        y: poster.height + 8px;
+        width: root.width;
+        text: root.design.name;
+        color: #FFFFFF;
+        font-size: Theme.fs-lg;
+        font-weight: Theme.weight-title;
+        wrap: word-wrap;
+    }
+
+    touch := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: pointer;
+        clicked => { root.chosen(); }
+    }
+}
+
+// The way in most sellers take, so the one in the brand's colour: the
+// designs themselves, each one tap from a finished project.
+component DesignsPanel inherits Rectangle {
+    in property <[StartDesignData]> designs;
+    in property <bool> enabled: true;
+    callback chosen(path: string);
+
+    property <length> gap: 14px;
+    property <int> count: Math.max(1, root.designs.length);
+    property <length> card-w: Math.min(132px,
+        (root.width - 48px - (root.count - 1) * root.gap) / root.count);
+
+    border-radius: Theme.r-lg;
+    background: Brand.blue;
+    opacity: root.enabled ? 1.0 : 0.5;
+    min-height: col.preferred-height;
+
+    col := VerticalLayout {
+        padding: 24px;
+        spacing: 6px;
+
+        Text {
+            text: I18n.t("start.withDesign");
+            color: Brand.on-blue;
+            font-size: 22px;
+            font-weight: Theme.weight-display;
+            wrap: word-wrap;
+        }
+        Text {
+            text: I18n.t("start.withDesignLead");
+            color: Brand.on-blue-soft;
+            font-size: Theme.fs-xl;
+            wrap: word-wrap;
+        }
+        Rectangle { height: 14px; }
+        HorizontalLayout {
+            alignment: start;
+            spacing: root.gap;
+            for design in root.designs: DesignCard {
+                width: root.card-w;
+                height: root.card-w * 16 / 9 + 8px + 36px;
+                design: design;
+                enabled: root.enabled;
+                chosen => { root.chosen(design.path); }
+            }
+        }
+    }
+}
+
+// A secondary way in: a quiet row with its glyph, its verb and one line
+// on what it does.
+component WayIn inherits Rectangle {
+    in property <Glyph> glyph;
+    in property <string> title;
+    in property <string> lead;
+    in property <bool> enabled: true;
+    callback clicked();
+
+    property <bool> lit: touch.has-hover && root.enabled;
+
+    border-radius: Theme.r-lg;
+    background: root.lit ? Theme.launch-raised : Theme.launch-panel;
+    border-width: 1px;
+    border-color: root.lit ? Theme.line-strong : Theme.line;
+    opacity: root.enabled ? 1.0 : 0.4;
+    min-height: Math.max(88px, row.preferred-height);
+
+    animate background, border-color { duration: 120ms; easing: cubic-bezier(0.4, 0, 0.2, 1); }
+
+    row := HorizontalLayout {
+        padding: 18px;
+        spacing: 14px;
+
+        VerticalLayout {
+            alignment: center;
+            Rectangle {
+                width: 44px;
+                height: 44px;
+                border-radius: 22px;
+                background: Theme.launch-well;
+                Icon {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    glyph: root.glyph;
+                    size: 20px;
+                    tint: Theme.fg;
+                }
+            }
+        }
+
+        VerticalLayout {
+            alignment: center;
+            spacing: 4px;
+            Text {
+                text: root.title;
+                color: Theme.fg;
+                font-size: 16px;
+                font-weight: Theme.weight-title;
+                wrap: word-wrap;
+            }
+            Text {
+                text: root.lead;
+                color: Theme.fg-muted;
+                font-size: Theme.fs-lg;
+                wrap: word-wrap;
+            }
+        }
+    }
+
+    touch := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: pointer;
+        clicked => { root.clicked(); }
+    }
+}
+
 export component StartScreen inherits Rectangle {
     in property <[RecentProjectData]> recents;
+    /// Editor MyA: the MyA designs, and the two ways in beside them.
+    in property <[StartDesignData]> designs;
+    callback design-chosen(path: string);
+    callback quick();
     /// A project is being made: every verb on the page waits for it.
     in property <bool> busy;
 
@@ -1109,7 +1294,7 @@ export component StartScreen inherits Rectangle {
 
                         Text {
                             horizontal-stretch: 1;
-                            text: I18n.t("start.projects");
+                            text: I18n.t("start.heroTitle");
                             color: Theme.fg;
                             // The one display-sized line in the app. The
                             // tree bundles two faces and no display face,
@@ -1155,13 +1340,79 @@ export component StartScreen inherits Rectangle {
                     Rectangle { height: 8px; }
 
                     Text {
-                        text: I18n.t("start.everythingHaveOpenedMachine");
+                        text: I18n.t("start.heroLead");
                         color: Theme.fg-muted;
                         font-size: root.narrow ? Theme.fs-lg : Theme.fs-xl;
                         wrap: word-wrap;
                     }
 
-                    Rectangle { height: root.narrow ? 24px : 34px; }
+                    Rectangle { height: root.narrow ? 20px : 28px; }
+
+                    // ── Editor MyA: the ways in ──────────────────────────
+                    // The designs carry the brand's colour and the most
+                    // room: most videos start there. The quick video and
+                    // the free edit sit beside them, quieter.
+                    if !root.narrow: HorizontalLayout {
+                        spacing: 16px;
+                        DesignsPanel {
+                            horizontal-stretch: 3;
+                            designs: root.designs;
+                            enabled: !root.busy;
+                            chosen(path) => { root.design-chosen(path); }
+                        }
+                        VerticalLayout {
+                            horizontal-stretch: 2;
+                            spacing: 12px;
+                            alignment: start;
+                            WayIn {
+                                glyph: Glyph.sparkle;
+                                title: I18n.t("start.quickTitle");
+                                lead: I18n.t("start.quickLead");
+                                enabled: !root.busy;
+                                clicked => { root.quick(); }
+                            }
+                            WayIn {
+                                glyph: Glyph.film;
+                                title: I18n.t("start.freeTitle");
+                                lead: I18n.t("start.freeLead");
+                                enabled: !root.busy;
+                                clicked => { root.compose(); }
+                            }
+                        }
+                    }
+                    if root.narrow: VerticalLayout {
+                        spacing: 12px;
+                        DesignsPanel {
+                            designs: root.designs;
+                            enabled: !root.busy;
+                            chosen(path) => { root.design-chosen(path); }
+                        }
+                        WayIn {
+                            glyph: Glyph.sparkle;
+                            title: I18n.t("start.quickTitle");
+                            lead: I18n.t("start.quickLead");
+                            enabled: !root.busy;
+                            clicked => { root.quick(); }
+                        }
+                        WayIn {
+                            glyph: Glyph.film;
+                            title: I18n.t("start.freeTitle");
+                            lead: I18n.t("start.freeLead");
+                            enabled: !root.busy;
+                            clicked => { root.compose(); }
+                        }
+                    }
+
+                    Rectangle { height: root.narrow ? 28px : 40px; }
+
+                    Text {
+                        text: I18n.t("start.yourProjects");
+                        color: Theme.fg;
+                        font-size: 18px;
+                        font-weight: Theme.weight-title;
+                    }
+
+                    Rectangle { height: 14px; }
 
                     // ── the grid ─────────────────────────────────────────
                     ProjectsGrid {

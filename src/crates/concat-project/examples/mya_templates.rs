@@ -458,6 +458,19 @@ fn arrivals(stickers: &Path, out: &Path) {
     b.write(out, "MyA - Llegó mercadería", "MyA · Llegó mercadería");
 }
 
+/// What the start screen's "Video rápido" makes: the seller's video with
+/// the logo in a corner, then the closing card. The editor stretches the
+/// slot to the video's own length.
+fn quick(stickers: &Path, out: &Path) {
+    let mut b = Builder::new(stickers);
+    let video = b.track();
+    b.slot(&video, 0.0, 10.0, "Tu video");
+    let mark = b.track();
+    b.picture("MyA/01 Logo M&A.png", &mark, 0.0, 10.0, 0.2, -0.42);
+    b.closing(10.0, 3.5);
+    b.write(out, "MyA - Video rápido", "MyA · Video rápido");
+}
+
 fn main() {
     let mut args = std::env::args().skip(1);
     let (Some(out), Some(stickers)) = (args.next(), args.next()) else {
@@ -468,4 +481,5 @@ fn main() {
     offer(&stickers, &out);
     showcase(&stickers, &out);
     arrivals(&stickers, &out);
+    quick(&stickers, &out);
 }
