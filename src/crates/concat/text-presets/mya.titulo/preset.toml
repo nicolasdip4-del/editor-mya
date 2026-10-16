@@ -1,0 +1,14 @@
+id = "mya.titulo"
+name = "MyA · Título"
+language = "Latin"
+order = -6
+offsetY = -0.3
+
+[style]
+content = "Heladera exhibidora"
+fontFamily = "Montserrat"
+fontWeight = 900
+fontSize = 0.065
+color = "#ffffff"
+background = "#004F9E"
+shadow = false

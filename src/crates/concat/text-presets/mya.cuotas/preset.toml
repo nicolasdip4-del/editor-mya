@@ -1,0 +1,14 @@
+id = "mya.cuotas"
+name = "MyA · Cuotas"
+language = "Latin"
+order = -4
+offsetY = 0.12
+
+[style]
+content = "Hasta 9 cuotas sin interés"
+fontFamily = "Montserrat"
+fontWeight = 800
+fontSize = 0.045
+color = "#ffffff"
+background = "#002F60"
+shadow = false

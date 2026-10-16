@@ -654,6 +654,8 @@ impl SettingsPane {
             self.transcribers = status
                 .models
                 .iter()
+                // Editor MyA: an English-only model cannot caption Spanish.
+                .filter(|model| !model.id.ends_with(".en"))
                 .map(|model| {
                     let (fetched, unpacking) =
                         downloading.get(&model.id).copied().unwrap_or((None, false));

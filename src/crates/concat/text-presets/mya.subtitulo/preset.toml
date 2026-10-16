@@ -1,0 +1,14 @@
+id = "mya.subtitulo"
+name = "MyA · Subtítulo"
+language = "Latin"
+order = -2
+offsetY = 0.3
+
+[style]
+content = "Así se ve por dentro"
+fontFamily = "Montserrat"
+fontWeight = 800
+fontSize = 0.05
+color = "#ffffff"
+strokeWidth = 0.008
+strokeColor = "#000000"

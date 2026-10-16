@@ -396,8 +396,11 @@ impl Transcriber {
         // English-only model asked for "auto" still runs the detection,
         // over a vocabulary it was never trained on, and "hears" Thai at
         // one percent - so it is simply told English.
+        // Editor MyA: the sellers speak Spanish, and a short clip over
+        // music is where detection guesses wrong - so a multilingual model
+        // is told Spanish outright.
         params.set_language(Some(if context.is_multilingual() {
-            "auto"
+            "es"
         } else {
             "en"
         }));

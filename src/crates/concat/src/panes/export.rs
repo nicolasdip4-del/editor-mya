@@ -38,6 +38,9 @@ pub enum ExportMsg {
     ResolutionChanged(i32),
     RateChanged(i32),
     QualityChanged(i32),
+    /// Editor MyA: a "Para redes" card - Reels, a WhatsApp status or
+    /// Marketplace - setting codec, quality and bitrate in one go.
+    SocialChosen(i32),
     CodecChanged(i32),
     TenBitChanged(bool),
     /// For an HDR timeline: written HDR (true), or tone-mapped to SDR.
@@ -84,6 +87,9 @@ pub struct ExportPane {
     pub resolution: usize,
     pub rate: usize,
     pub quality: usize,
+    /// Editor MyA: the "Para redes" card the settings came from, while no
+    /// knob has moved since.
+    pub social: Option<usize>,
     /// Index into `VideoCodec::ALL`.
     pub codec: usize,
     pub ten_bit: bool,
@@ -119,6 +125,7 @@ impl Default for ExportPane {
             resolution: 2,
             rate: 0,
             quality: 1,
+            social: None,
             codec: 0,
             ten_bit: false,
             sdr: false,
@@ -137,6 +144,36 @@ impl Default for ExportPane {
 }
 
 impl ExportPane {
+    /// Editor MyA: what each "Para redes" card sets. All H.264, the one
+    /// every phone and every network plays; a WhatsApp status is held to a
+    /// fixed 2.5 Mbps so a minute stays near 20 MB.
+    fn choose_social(&mut self, index: usize) {
+        let h264 = concat_media::VideoCodec::ALL
+            .iter()
+            .position(|codec| *codec == concat_media::VideoCodec::H264)
+            .unwrap_or(0);
+        self.codec = h264;
+        self.ten_bit = false;
+        self.sdr = true;
+        match index {
+            0 => {
+                self.quality = 0;
+                self.advanced = false;
+            }
+            1 => {
+                self.quality = 2;
+                self.advanced = true;
+                self.rate_mode = 1;
+                self.bitrate = 2_500;
+            }
+            _ => {
+                self.quality = 1;
+                self.advanced = false;
+            }
+        }
+        self.social = Some(index.min(2));
+    }
+
     /// Applies one message. The studio is the rest of the window, for
     /// what the sheet needs to know and to start; the pane's own state is
     /// `self`, and while this runs the studio's copy of it is a blank the
@@ -165,13 +202,18 @@ impl ExportPane {
             ExportMsg::RateChanged(index) => {
                 self.rate = (index.max(0) as usize).min(Self::rates(studio).len() - 1);
             }
-            ExportMsg::QualityChanged(index) => self.quality = (index.max(0) as usize).min(2),
+            ExportMsg::QualityChanged(index) => {
+                self.quality = (index.max(0) as usize).min(2);
+                self.social = None;
+            }
+            ExportMsg::SocialChosen(index) => self.choose_social(index.max(0) as usize),
             // A codec this device cannot encode is not taken: the picker
             // says so under it, and the choice before stands.
             ExportMsg::CodecChanged(index) => {
                 let index = (index.max(0) as usize).min(concat_media::VideoCodec::ALL.len() - 1);
                 if concat_media::VideoCodec::ALL[index].encodable() {
                     self.codec = index;
+                    self.social = None;
                 }
             }
             ExportMsg::TenBitChanged(on) => self.ten_bit = on,
@@ -180,11 +222,15 @@ impl ExportPane {
                 self.color_range = (index.max(0) as usize).min(ColorRange::ALL.len() - 1);
             }
             ExportMsg::AdvancedToggled(on) => self.advanced = on,
-            ExportMsg::RateModeChanged(index) => self.rate_mode = index.max(0) as usize,
+            ExportMsg::RateModeChanged(index) => {
+                self.rate_mode = index.max(0) as usize;
+                self.social = None;
+            }
             ExportMsg::BitrateChanged(text) => {
                 let digits: String = text.chars().filter(|c| c.is_ascii_digit()).collect();
                 if let Ok(value) = digits.parse::<u32>() {
                     self.bitrate = value.clamp(100, 200_000);
+                    self.social = None;
                 }
             }
             ExportMsg::Again => {
@@ -579,6 +625,7 @@ impl ExportPane {
             }
             .into(),
             resolution: self.resolution as i32,
+            social: self.social.map_or(-1, |index| index as i32),
             resolutions: {
                 let sizes: Vec<SharedString> = Self::ladder(studio)
                     .iter()

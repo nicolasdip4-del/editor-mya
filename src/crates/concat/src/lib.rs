@@ -1558,6 +1558,9 @@ fn start(project: Option<std::path::PathBuf>, smoke: bool) -> Result<(), slint::
     app.on_export_quality_changed(on_window!(|state, index: i32| {
         state.handle(Msg::Export(ExportMsg::QualityChanged(index)));
     }));
+    app.on_export_social_chosen(on_window!(|state, index: i32| {
+        state.handle(Msg::Export(ExportMsg::SocialChosen(index)));
+    }));
     app.on_export_codec_changed(on_window!(|state, index: i32| {
         state.handle(Msg::Export(ExportMsg::CodecChanged(index)));
     }));

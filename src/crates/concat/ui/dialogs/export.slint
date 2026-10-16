@@ -27,6 +27,8 @@ export enum ExportPhase { idle, running, done, failed }
 
 export struct ExportData {
     open: bool,
+    /// Editor MyA: the "Para redes" card in force, or -1.
+    social: int,
     /// the file name, without folder or extension
     name: string,
     /// the whole path, already shortened for display by whoever owns it
@@ -432,6 +434,39 @@ component OutputSection inherits DialogSection {
     }
 }
 
+// Editor MyA: one tap sets what a network wants - codec, quality and
+// bitrate - for a Reel, a WhatsApp status or a Marketplace post.
+component SocialSection inherits DialogSection {
+    in property <ExportData> data;
+
+    callback social-chosen(index: int);
+
+    title: I18n.t("export.forSocial");
+
+    HorizontalLayout {
+        spacing: 6px;
+
+        QualityCard {
+            label: I18n.t("export.socialReels");
+            note: I18n.t("export.socialReelsNote");
+            current: root.data.social == 0;
+            clicked => { root.social-chosen(0); }
+        }
+        QualityCard {
+            label: I18n.t("export.socialStatus");
+            note: I18n.t("export.socialStatusNote");
+            current: root.data.social == 1;
+            clicked => { root.social-chosen(1); }
+        }
+        QualityCard {
+            label: I18n.t("export.socialMarketplace");
+            note: I18n.t("export.socialMarketplaceNote");
+            current: root.data.social == 2;
+            clicked => { root.social-chosen(2); }
+        }
+    }
+}
+
 component QualitySection inherits DialogSection {
     in property <ExportData> data;
 
@@ -707,6 +742,7 @@ export component ExportDialog inherits Rectangle {
     callback resolution-changed(index: int);
     callback rate-changed(index: int);
     callback quality-changed(index: int);
+    callback social-chosen(index: int);
     callback codec-changed(index: int);
     callback ten-bit-changed(on: bool);
     callback hdr-changed(on: bool);
@@ -832,6 +868,10 @@ export component ExportDialog inherits Rectangle {
 
                     if root.running || root.columns == 1: VerticalLayout {
                         SummarySection { first: true; data: root.data; }
+                        if !root.running: SocialSection {
+                            data: root.data;
+                            social-chosen(index) => { root.social-chosen(index); }
+                        }
                         if !root.running: DestinationSection {
                             data: root.data;
                             phone: root.phone;

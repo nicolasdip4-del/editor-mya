@@ -1,0 +1,13 @@
+id = "mya.precio"
+name = "MyA · Precio"
+language = "Latin"
+order = -5
+
+[style]
+content = "$ 1.250.000"
+fontFamily = "Montserrat"
+fontWeight = 900
+fontSize = 0.08
+color = "#1A1A1A"
+background = "#EF8702"
+shadow = false
