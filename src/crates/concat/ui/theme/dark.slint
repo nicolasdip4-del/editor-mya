@@ -136,6 +136,9 @@ export global Dark {
     // The same order as `light.slint` and as `accent-names` in theme.slint,
     // which is where each one's name lives.
     out property <[Accent]> accents: [
+        // Editor MyA: the brand blue as the design system sets it for dark
+        // surfaces (its dark link colour), with dark words on it.
+        { accent: #6cb0f5, hover: #8cc2f8, soft: #6cb0f533, on: #061c33 },   // MyA
         { accent: #cbf53f, hover: #d9ff63, soft: #cbf53f33, on: #15220a },   // lime
         { accent: #5fb8ff, hover: #82c9ff, soft: #5fb8ff33, on: #061c33 },   // sky
         { accent: #b394ff, hover: #c6b0ff, soft: #b394ff33, on: #1d0f3d },   // violet

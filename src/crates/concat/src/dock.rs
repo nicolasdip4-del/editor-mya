@@ -20,6 +20,7 @@ pub const SEAT_GAP: f32 = 8.0;
 pub const METERS_MIN_W: f32 = 76.0;
 /// The meters' share of the bottom row in the default layout: a slim
 /// column beside the timeline, at its full height.
+#[allow(dead_code)] // Editor MyA: the default dock no longer seats the meters.
 const METERS_SHARE: f32 = 0.055;
 
 pub enum Dock {
@@ -273,13 +274,9 @@ pub fn default_dock() -> Dock {
                 second: Dock::leaf(PaneKind::Inspector),
             }),
         }),
-        // The timeline, and the VU meters in a slim column beside it.
-        second: Box::new(Dock::Split {
-            columns: true,
-            ratio: 1.0 - METERS_SHARE,
-            first: Dock::leaf(PaneKind::Timeline),
-            second: Dock::leaf(PaneKind::Meters),
-        }),
+        // Editor MyA: the timeline across the whole width. The VU meters
+        // are a seller's least-needed pane; the panel switcher adds them.
+        second: Dock::leaf(PaneKind::Timeline),
     }
 }
 

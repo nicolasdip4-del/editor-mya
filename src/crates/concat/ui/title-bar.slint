@@ -148,6 +148,9 @@ export component TitleBar inherits Rectangle {
     /// A view was picked from the add-panel list.
     callback add-pane(kind: PaneKind);
     callback export-clicked();
+    /// Editor MyA: the export sheet with every option, beside the one-tap
+    /// "Listo para redes" that `export-clicked` now is.
+    callback export-options();
 
     height: 32px;
     // The window's ground, not a panel's: the strip is the frame the panes
@@ -275,6 +278,34 @@ export component TitleBar inherits Rectangle {
             }
         }
 
+        // Editor MyA: every export option, quieter than the one-tap button.
+        if !root.minimal: VerticalLayout {
+            alignment: center;
+            padding-left: 4px;
+
+            Rectangle {
+                width: options-label.width + 16px;
+                height: 24px;
+                border-radius: Theme.r-sm;
+                background: options-touch.has-hover ? Theme.field : Colors.transparent;
+
+                animate background { duration: 100ms; easing: cubic-bezier(0.4, 0, 0.2, 1); }
+
+                options-label := Text {
+                    x: 8px;
+                    y: (parent.height - self.height) / 2;
+                    text: I18n.t("export.moreOptions");
+                    color: options-touch.has-hover ? Theme.fg : Theme.fg-muted;
+                    font-size: Theme.fs;
+                }
+
+                options-touch := TouchArea {
+                    mouse-cursor: pointer;
+                    clicked => { root.export-options(); }
+                }
+            }
+        }
+
         if !root.minimal: VerticalLayout {
             alignment: center;
             padding-left: 4px;
@@ -298,7 +329,7 @@ export component TitleBar inherits Rectangle {
                 label := Text {
                     x: icon.x + icon.width + 5px;
                     y: (parent.height - self.height) / 2;
-                    text: I18n.t("common.export");
+                    text: I18n.t("export.readyForSocial");
                     color: Theme.on-accent;
                     font-size: Theme.fs;
                     font-weight: Theme.weight-title;

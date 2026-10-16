@@ -1405,7 +1405,12 @@ fn start(project: Option<std::path::PathBuf>, smoke: bool) -> Result<(), slint::
     }));
 
     // ── the dialogs ──
+    // Editor MyA: the title bar's main button exports for social media in
+    // one tap; "Exportar…" beside it is the sheet with every option.
     app.on_export_clicked(on_window!(|state| {
+        state.handle(Msg::Export(ExportMsg::ReadyForSocial));
+    }));
+    app.on_export_options(on_window!(|state| {
         state.handle(Msg::Export(ExportMsg::Open));
     }));
     app.on_open_settings(on_window!(|state| {

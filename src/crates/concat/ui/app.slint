@@ -275,6 +275,8 @@ export component App inherits Window {
 
     callback open-settings();
     callback export-clicked();
+    /// Editor MyA: the full export sheet; `export-clicked` is the one tap.
+    callback export-options();
 
     /// The project sheet, opened from the Details panel.
     in property <ProjectSheetData> project-sheet;
@@ -634,6 +636,7 @@ export component App inherits Window {
                 open-settings => { root.open-settings(); }
                 add-pane(kind) => { Editor.dock-add(kind); }
                 export-clicked => { root.export-clicked(); }
+                export-options => { root.export-options(); }
             }
 
             if root.on-start: StartScreen {

@@ -41,6 +41,9 @@ pub enum ExportMsg {
     /// Editor MyA: a "Para redes" card - Reels, a WhatsApp status or
     /// Marketplace - setting codec, quality and bitrate in one go.
     SocialChosen(i32),
+    /// Editor MyA: "Listo para redes" - the sheet opened on the social
+    /// card's settings and the render started, in one tap.
+    ReadyForSocial,
     CodecChanged(i32),
     TenBitChanged(bool),
     /// For an HDR timeline: written HDR (true), or tone-mapped to SDR.
@@ -196,6 +199,11 @@ impl ExportPane {
                 self.social = None;
             }
             ExportMsg::SocialChosen(index) => self.choose_social(index.max(0) as usize),
+            ExportMsg::ReadyForSocial => {
+                self.update(ExportMsg::Open, studio);
+                self.choose_social(0);
+                self.update(ExportMsg::Start, studio);
+            }
             // A codec this device cannot encode is not taken: the picker
             // says so under it, and the choice before stands.
             ExportMsg::CodecChanged(index) => {
