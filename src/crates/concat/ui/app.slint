@@ -254,6 +254,8 @@ export component App inherits Window {
     callback settings-download-base-edited(text: string);
     callback settings-server-enabled-changed(on: bool);
     callback settings-server-host-edited(text: string);
+    callback settings-seller-name-edited(text: string);
+    callback settings-seller-whatsapp-edited(text: string);
     callback settings-server-port-edited(port: int);
     callback settings-server-token-edited(text: string);
     callback settings-server-token-generated();
@@ -763,6 +765,8 @@ export component App inherits Window {
         download-base-edited(text) => { root.settings-download-base-edited(text); }
         server-enabled-changed(on) => { root.settings-server-enabled-changed(on); }
         server-host-edited(text) => { root.settings-server-host-edited(text); }
+        seller-name-edited(text) => { root.settings-seller-name-edited(text); }
+        seller-whatsapp-edited(text) => { root.settings-seller-whatsapp-edited(text); }
         server-port-edited(port) => { root.settings-server-port-edited(port); }
         server-token-edited(text) => { root.settings-server-token-edited(text); }
         server-token-generated => { root.settings-server-token-generated(); }

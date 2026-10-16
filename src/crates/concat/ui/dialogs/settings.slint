@@ -66,6 +66,9 @@ export struct SettingsData {
     download-base: string,
     /// the Concat API served on a socket while the window is open
     server-enabled: bool,
+    /// Editor MyA: the seller's name and WhatsApp, for the templates.
+    seller-name: string,
+    seller-whatsapp: string,
     /// the two halves of "127.0.0.1:7420"
     server-host: string,
     server-port: int,
@@ -454,6 +457,8 @@ export component SettingsDialog inherits Modal {
     callback download-base-edited(text: string);
     callback server-enabled-changed(on: bool);
     callback server-host-edited(text: string);
+    callback seller-name-edited(text: string);
+    callback seller-whatsapp-edited(text: string);
     callback server-port-edited(port: int);
     callback server-token-edited(text: string);
     /// A fresh random token, in place of whatever is there.
@@ -641,8 +646,28 @@ export component SettingsDialog inherits Modal {
             finger: root.phone;
 
             if root.data.tab == 0: VerticalLayout {
+                // Editor MyA: who the MyA templates' closing card names.
                 DialogSection {
                     first: true;
+                    title: I18n.t("settings.sellerData");
+                    hint: I18n.t("settings.sellerDataHint");
+
+                    VerticalLayout {
+                        spacing: 8px;
+                        Field {
+                            value: root.data.seller-name;
+                            placeholder: I18n.t("settings.sellerName");
+                            edited(text) => { root.seller-name-edited(text); }
+                        }
+                        Field {
+                            value: root.data.seller-whatsapp;
+                            placeholder: I18n.t("settings.sellerWhatsapp");
+                            edited(text) => { root.seller-whatsapp-edited(text); }
+                        }
+                    }
+                }
+
+                DialogSection {
                     title: I18n.t("settings.language");
 
                     // Native names: whoever is stranded in a language they

@@ -2134,6 +2134,7 @@ impl Studio {
         let recents = projects::list(&host.dirs.config);
         let text_presets = presets::all(&host.dirs);
         let stickers = Self::load_stickers(&host.dirs);
+        crate::templates_mya::install(&host.dirs, &prefs.seller_name, &prefs.seller_whatsapp);
         let mut studio = Self {
             prefs,
             library: Default::default(),

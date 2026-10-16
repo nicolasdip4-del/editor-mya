@@ -82,6 +82,10 @@ pub struct Preferences {
     /// The Concat API on a socket while the window is open.
     #[serde(default)]
     pub server: ServerPrefs,
+    /// Editor MyA: the seller's name, for the MyA templates' closing card.
+    pub seller_name: String,
+    /// Editor MyA: the seller's WhatsApp number, on the same card.
+    pub seller_whatsapp: String,
     /// The look new titles start from and generated captions are set in,
     /// kept from a title by the Text panel's "Use for new titles"; its
     /// words are empty. None starts titles in the bundled face.

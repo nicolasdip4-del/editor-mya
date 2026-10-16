@@ -54,6 +54,9 @@ pub enum SettingsMsg {
     ServerPortEdited(i32),
     ServerTokenEdited(String),
     ServerTokenGenerated,
+    /// Editor MyA: the seller's name and WhatsApp, for the templates.
+    SellerNameEdited(String),
+    SellerWhatsappEdited(String),
     /// Make this the model the engine uses.
     ModelActivated(String),
     ModelDownload(String),
@@ -293,6 +296,16 @@ impl SettingsPane {
                 studio.prefs.server.enabled = on;
                 studio.prefs.save(&studio.host.dirs);
                 self.apply_server(studio);
+            }
+            SettingsMsg::SellerNameEdited(text) => {
+                studio.prefs.seller_name = text.trim().to_owned();
+                studio.prefs.save(&studio.host.dirs);
+                Self::apply_seller(studio);
+            }
+            SettingsMsg::SellerWhatsappEdited(text) => {
+                studio.prefs.seller_whatsapp = text.trim().to_owned();
+                studio.prefs.save(&studio.host.dirs);
+                Self::apply_seller(studio);
             }
             SettingsMsg::ServerHostEdited(text) => {
                 let (_, port) = split_listen(&studio.prefs.server.listen);
@@ -540,6 +553,16 @@ impl SettingsPane {
         (index, preference)
     }
 
+    /// Editor MyA: writes the MyA templates again, their closing card
+    /// naming the seller as Settings now has them.
+    fn apply_seller(studio: &Studio) {
+        crate::templates_mya::install(
+            &studio.host.dirs,
+            &studio.prefs.seller_name,
+            &studio.prefs.seller_whatsapp,
+        );
+    }
+
     /// Tells the downloaders where to look first, from the preferences.
     fn apply_download_source(studio: &Studio) {
         let (_, preference) = Self::download_source(studio);
@@ -761,6 +784,8 @@ impl SettingsPane {
             download_source: self.download_source as i32,
             download_base: self.download_base.as_str().into(),
             server_enabled: studio.prefs.server.enabled,
+            seller_name: studio.prefs.seller_name.as_str().into(),
+            seller_whatsapp: studio.prefs.seller_whatsapp.as_str().into(),
             server_host: split_listen(&studio.prefs.server.listen).0.into(),
             server_port: i32::from(split_listen(&studio.prefs.server.listen).1),
             server_token: match &studio.host.server {

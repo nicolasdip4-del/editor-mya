@@ -54,6 +54,7 @@ mod source;
 mod stickers;
 mod studio;
 mod sysinfo;
+mod templates_mya;
 /// Native Wayland file drops, which winit does not report; see the module.
 #[cfg(target_os = "linux")]
 mod wayland_drop;
@@ -1623,6 +1624,16 @@ fn start(project: Option<std::path::PathBuf>, smoke: bool) -> Result<(), slint::
     }));
     app.on_settings_server_enabled_changed(on_window!(|state, on: bool| {
         state.handle(Msg::Settings(SettingsMsg::ServerEnabledChanged(on)));
+    }));
+    app.on_settings_seller_name_edited(on_window!(|state, text: SharedString| {
+        state.handle(Msg::Settings(SettingsMsg::SellerNameEdited(
+            text.to_string(),
+        )));
+    }));
+    app.on_settings_seller_whatsapp_edited(on_window!(|state, text: SharedString| {
+        state.handle(Msg::Settings(SettingsMsg::SellerWhatsappEdited(
+            text.to_string(),
+        )));
     }));
     app.on_settings_server_host_edited(on_window!(|state, text: SharedString| {
         state.handle(Msg::Settings(SettingsMsg::ServerHostEdited(
