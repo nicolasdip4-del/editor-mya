@@ -1,0 +1,136 @@
+name: Editor MyA - publicar versión
+
+# Pushing a tag that starts with v (v0.2.8, ...) builds Editor MyA for the
+# desktops and publishes a GitHub release under that tag: the installers
+# renamed EditorMyA-*, a manifest.json the in-app updater reads, and a
+# checksum file. Unlike Concat's release.yml there is no draft step and no
+# phone build: the release is what every seller's Settings › Version sees
+# as soon as this finishes.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Un tag existente para armar y publicar, p. ej. v0.2.8
+        required: true
+
+concurrency:
+  group: mya-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: El tag coincide con la versión
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+      version: ${{ steps.tag.outputs.version }}
+    steps:
+      - name: Es un tag de versión
+        env:
+          TAG: ${{ inputs.tag || github.ref_name }}
+        run: |
+          if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
+            echo "::error::'$TAG' no es un tag de versión (v1.2.3)"
+            exit 1
+          fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+      - id: tag
+        env:
+          TAG: ${{ inputs.tag || github.ref_name }}
+        run: |
+          version=$(sed -n 's/^version = "\(.*\)"/\1/p' src/Cargo.toml | head -1)
+          case "$TAG" in
+            "v$version" | "v$version-"*) ;;
+            *) echo "el tag $TAG no coincide con la versión $version de src/Cargo.toml" >&2; exit 1 ;;
+          esac
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: check
+    uses: ./.github/workflows/build-app.yml
+    with:
+      ref: ${{ needs.check.outputs.tag }}
+    secrets: inherit
+
+  publish:
+    name: Publicar versión
+    needs: [check, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          path: bundles
+          pattern: Concat-*
+          merge-multiple: true
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.check.outputs.tag }}
+          path: source
+
+      # The build names every bundle Concat-*; the release carries the
+      # product's own name, which is what scripts/models.py lists.
+      - name: Renombrar a EditorMyA
+        run: |
+          set -euo pipefail
+          cd bundles
+          for file in Concat-*; do
+            mv -- "$file" "EditorMyA-${file#Concat-}"
+          done
+          ls -l
+
+      - name: Manifiesto
+        env:
+          VERSION: ${{ needs.check.outputs.version }}
+          TAG: ${{ needs.check.outputs.tag }}
+        run: |
+          set -euo pipefail
+          python3 source/scripts/models.py release-manifest \
+            --version "$VERSION" \
+            --tag "$TAG" \
+            --bundles bundles \
+            --out bundles/manifest.json
+          cat bundles/manifest.json
+
+      - name: Checksums
+        run: |
+          set -euo pipefail
+          cd bundles
+          sha256sum -- * > SHA256SUMS
+
+      - name: Notas
+        env:
+          VERSION: ${{ needs.check.outputs.version }}
+        run: |
+          cat > "$RUNNER_TEMP/notes.md" <<EOF
+          Editor MyA $VERSION.
+
+          **Windows:** bajá \`EditorMyA-$VERSION-windows-x86_64-setup.exe\` y ejecutalo.
+          Si aparece el aviso azul de Windows, tocá "Más información" › "Ejecutar de todas formas".
+
+          **Linux:** \`EditorMyA-$VERSION-x86_64.AppImage\` (darle permiso de ejecución y abrirlo).
+
+          **Mac:** el \`.dmg\` de tu procesador (arm64 = Apple, x86_64 = Intel).
+
+          Basado en [Concat](https://github.com/jub0t/Concat) (AGPL-3.0).
+          EOF
+
+      - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
+        with:
+          tag_name: ${{ needs.check.outputs.tag }}
+          name: Editor MyA ${{ needs.check.outputs.tag }}
+          draft: false
+          prerelease: ${{ contains(needs.check.outputs.tag, '-') }}
+          make_latest: ${{ !contains(needs.check.outputs.tag, '-') }}
+          body_path: ${{ runner.temp }}/notes.md
+          fail_on_unmatched_files: true
+          files: bundles/*

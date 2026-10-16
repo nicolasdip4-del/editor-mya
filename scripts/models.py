@@ -52,22 +52,22 @@ TABLES = {
 # version to fill in. Installers and binaries, never an archive of a
 # folder - a person downloads the thing they run.
 BUNDLES = [
-    ("macos", "arm64", "dmg", "Concat-{v}-macos-arm64.dmg"),
-    ("macos", "x86_64", "dmg", "Concat-{v}-macos-x86_64.dmg"),
-    ("linux", "x86_64", "deb", "Concat-{v}-linux-x86_64.deb"),
-    ("linux", "x86_64", "rpm", "Concat-{v}-linux-x86_64.rpm"),
-    ("linux", "x86_64", "appimage", "Concat-{v}-x86_64.AppImage"),
-    ("linux", "x86_64", "pacman", "Concat-{v}-linux-x86_64.pkg.tar.zst"),
-    ("linux", "aarch64", "deb", "Concat-{v}-linux-aarch64.deb"),
-    ("linux", "aarch64", "rpm", "Concat-{v}-linux-aarch64.rpm"),
-    ("linux", "aarch64", "appimage", "Concat-{v}-aarch64.AppImage"),
-    ("linux", "aarch64", "pacman", "Concat-{v}-linux-aarch64.pkg.tar.zst"),
-    ("windows", "x86_64", "setup", "Concat-{v}-windows-x86_64-setup.exe"),
-    ("windows", "x86_64", "msi", "Concat-{v}-windows-x86_64.msi"),
-    ("windows", "aarch64", "setup", "Concat-{v}-windows-aarch64-setup.exe"),
-    ("windows", "aarch64", "msi", "Concat-{v}-windows-aarch64.msi"),
-    ("android", "arm64", "apk", "Concat-{v}-android-arm64.apk"),
-    ("ios", "arm64", "ipa", "Concat-{v}-ios-arm64.ipa"),
+    ("macos", "arm64", "dmg", "EditorMyA-{v}-macos-arm64.dmg"),
+    ("macos", "x86_64", "dmg", "EditorMyA-{v}-macos-x86_64.dmg"),
+    ("linux", "x86_64", "deb", "EditorMyA-{v}-linux-x86_64.deb"),
+    ("linux", "x86_64", "rpm", "EditorMyA-{v}-linux-x86_64.rpm"),
+    ("linux", "x86_64", "appimage", "EditorMyA-{v}-x86_64.AppImage"),
+    ("linux", "x86_64", "pacman", "EditorMyA-{v}-linux-x86_64.pkg.tar.zst"),
+    ("linux", "aarch64", "deb", "EditorMyA-{v}-linux-aarch64.deb"),
+    ("linux", "aarch64", "rpm", "EditorMyA-{v}-linux-aarch64.rpm"),
+    ("linux", "aarch64", "appimage", "EditorMyA-{v}-aarch64.AppImage"),
+    ("linux", "aarch64", "pacman", "EditorMyA-{v}-linux-aarch64.pkg.tar.zst"),
+    ("windows", "x86_64", "setup", "EditorMyA-{v}-windows-x86_64-setup.exe"),
+    ("windows", "x86_64", "msi", "EditorMyA-{v}-windows-x86_64.msi"),
+    ("windows", "aarch64", "setup", "EditorMyA-{v}-windows-aarch64-setup.exe"),
+    ("windows", "aarch64", "msi", "EditorMyA-{v}-windows-aarch64.msi"),
+    ("android", "arm64", "apk", "EditorMyA-{v}-android-arm64.apk"),
+    ("ios", "arm64", "ipa", "EditorMyA-{v}-ios-arm64.ipa"),
 ]
 
 
@@ -112,6 +112,15 @@ def hf_mirror(url: str) -> str | None:
 
 def asset_url(release: str, file: str) -> str:
     return f"https://github.com/{REPO}/releases/download/{release}/{file}"
+
+
+# Editor MyA: the app's own bundles are released on the fork; the models
+# stay on Concat's mirror release, which REPO names.
+BINARY_REPO = "nicolasdip4-del/editor-mya"
+
+
+def binary_url(release: str, file: str) -> str:
+    return f"https://github.com/{BINARY_REPO}/releases/download/{release}/{file}"
 
 
 def engine_id(model: dict) -> str:
@@ -335,7 +344,7 @@ def release_manifest(version: str, tag: str, bundles: pathlib.Path | None) -> di
         file = stem.format(v=version)
         entry = {
             "file": file,
-            "url": asset_url(tag, file),
+            "url": binary_url(tag, file),
         }
         if bundles is not None:
             path = bundles / file
@@ -375,7 +384,7 @@ def release_manifest(version: str, tag: str, bundles: pathlib.Path | None) -> di
     return {
         # 2: a target holds one row per kind of file, not one file.
         "schema": 2,
-        "product": "Concat",
+        "product": "Editor MyA",
         "version": version,
         "tag": tag,
         "models_release": release,

@@ -23,9 +23,8 @@ name: Release
 # The release is created as a draft. A person looks it over - the notes,
 # the files - and publishes it from the Releases page; nothing reaches
 # the updater or the downloads page before then.
+# Editor MyA: tags publish through mya-release.yml; this one only by hand.
 on:
-  push:
-    tags: ["v*"]
   workflow_dispatch:
     inputs:
       tag:
