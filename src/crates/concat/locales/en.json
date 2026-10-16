@@ -778,7 +778,7 @@
   "settings.rose": "Rose",
   "settings.runsLocally": "Runs locally",
   "settings.scale": "Scale",
-  "settings.scaleHint": "Draw the interface larger than the display's own scale. Most of Editor MyA was built on a small laptop, and reads small on a large screen.",
+  "settings.scaleHint": "Draw the interface larger than the display's own scale, for when it reads small on a large screen.",
   "settings.scaleSystem": "System",
   "settings.servesConcatApiWhile": "Serves the Editor MyA API while the window is open, so a script or another program can create, edit and export projects of its own. Anything that connects can read and write files as you can.",
   "settings.showTheLog": "Show the log",
