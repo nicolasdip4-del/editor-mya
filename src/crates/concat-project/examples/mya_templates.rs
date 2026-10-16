@@ -24,8 +24,8 @@ const WIDTH: u32 = 1080;
 const HEIGHT: u32 = 1920;
 const BLUE: &str = "#004F9E";
 const BLUE_DARK: &str = "#003B78";
-/// The brand face; the editor stands Montserrat in where it is missing.
-const BRAND_FONT: &str = "\"Gotham Pro\"";
+/// The titles' face: Montserrat, bundled with the editor.
+const BRAND_FONT: &str = "Montserrat";
 
 struct Builder {
     editor: Editor,
