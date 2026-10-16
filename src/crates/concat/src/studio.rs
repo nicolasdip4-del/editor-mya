@@ -9556,18 +9556,28 @@ impl Studio {
         sync(&models.text_presets, cards);
 
         // The Stickers page's pictures and their shelves.
-        let held: Vec<Sticker> = self.stickers.iter().map(|(sticker, _)| sticker.clone()).collect();
+        let held: Vec<Sticker> = self
+            .stickers
+            .iter()
+            .map(|(sticker, _)| sticker.clone())
+            .collect();
         let shelves = stickers::shelves(&held);
         sync(
             &models.sticker_shelves,
-            shelves.iter().map(|shelf| SharedString::from(shelf.as_str())).collect(),
+            shelves
+                .iter()
+                .map(|shelf| SharedString::from(shelf.as_str()))
+                .collect(),
         );
         let mut counts = vec![0_i32; shelves.len()];
         let cards = self
             .stickers
             .iter()
             .map(|(sticker, card)| {
-                let shelf = shelves.iter().position(|shelf| *shelf == sticker.shelf).unwrap_or(0);
+                let shelf = shelves
+                    .iter()
+                    .position(|shelf| *shelf == sticker.shelf)
+                    .unwrap_or(0);
                 let order = counts[shelf];
                 counts[shelf] += 1;
                 StickerCardData {

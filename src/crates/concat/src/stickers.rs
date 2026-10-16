@@ -19,40 +19,142 @@ use concat_project::model::Timeline;
 
 /// The built-in shelves, as `(shelf/file, bytes)`.
 const BUILT_IN: &[(&str, &[u8])] = &[
-    ("MyA/01 Logo M&A.png", include_bytes!("../stickers/MyA/01 Logo M&A.png")),
-    ("MyA/02 Súper Crédito.png", include_bytes!("../stickers/MyA/02 Súper Crédito.png")),
-    ("MyA/03 Hasta 9 cuotas sin interés.png", include_bytes!("../stickers/MyA/03 Hasta 9 cuotas sin interés.png")),
-    ("MyA/04 9 cuotas sin interés azul.png", include_bytes!("../stickers/MyA/04 9 cuotas sin interés azul.png")),
-    ("MyA/05 9 cuotas sin interés.png", include_bytes!("../stickers/MyA/05 9 cuotas sin interés.png")),
-    ("MyA/06 Aprovechá 9 cuotas.png", include_bytes!("../stickers/MyA/06 Aprovechá 9 cuotas.png")),
-    ("MyA/07 Sin interés.png", include_bytes!("../stickers/MyA/07 Sin interés.png")),
-    ("MyA/08 Envíos a todo el país.png", include_bytes!("../stickers/MyA/08 Envíos a todo el país.png")),
-    ("MyA/09 Atención.png", include_bytes!("../stickers/MyA/09 Atención.png")),
-    ("MyA/10 Líder en equipamiento comercial.png", include_bytes!("../stickers/MyA/10 Líder en equipamiento comercial.png")),
-    ("MyA/11 Tarjetas.png", include_bytes!("../stickers/MyA/11 Tarjetas.png")),
-    ("MyA/12 Tarjetas 2.png", include_bytes!("../stickers/MyA/12 Tarjetas 2.png")),
-    ("MyA/13 Naranja X.png", include_bytes!("../stickers/MyA/13 Naranja X.png")),
-    ("MyA/14 Visa.png", include_bytes!("../stickers/MyA/14 Visa.png")),
-    ("MyA/15 Mastercard.png", include_bytes!("../stickers/MyA/15 Mastercard.png")),
-    ("MyA/16 WhatsApp.png", include_bytes!("../stickers/MyA/16 WhatsApp.png")),
-    ("MyA/17 Instagram.png", include_bytes!("../stickers/MyA/17 Instagram.png")),
-    ("MyA/18 Facebook.png", include_bytes!("../stickers/MyA/18 Facebook.png")),
-    ("MyA/19 TikTok.png", include_bytes!("../stickers/MyA/19 TikTok.png")),
-    ("MyA/20 YouTube.png", include_bytes!("../stickers/MyA/20 YouTube.png")),
-    ("MyA/21 Oferta.png", include_bytes!("../stickers/MyA/21 Oferta.png")),
-    ("MyA/22 Nuevo.png", include_bytes!("../stickers/MyA/22 Nuevo.png")),
-    ("MyA/23 Últimas unidades.png", include_bytes!("../stickers/MyA/23 Últimas unidades.png")),
-    ("MyA/24 Stock disponible.png", include_bytes!("../stickers/MyA/24 Stock disponible.png")),
-    ("MyA/25 Consultá por WhatsApp.png", include_bytes!("../stickers/MyA/25 Consultá por WhatsApp.png")),
-    ("MyA/26 Entrega inmediata.png", include_bytes!("../stickers/MyA/26 Entrega inmediata.png")),
-    ("Marcas/Depaolo.png", include_bytes!("../stickers/Marcas/Depaolo.png")),
-    ("Marcas/Frider.png", include_bytes!("../stickers/Marcas/Frider.png")),
-    ("Marcas/INR.png", include_bytes!("../stickers/Marcas/INR.png")),
-    ("Marcas/Inelro.png", include_bytes!("../stickers/Marcas/Inelro.png")),
-    ("Marcas/Morelli.png", include_bytes!("../stickers/Marcas/Morelli.png")),
-    ("Marcas/Sol Real.png", include_bytes!("../stickers/Marcas/Sol Real.png")),
-    ("Marcas/Teora.png", include_bytes!("../stickers/Marcas/Teora.png")),
-    ("Marcas/Usman.png", include_bytes!("../stickers/Marcas/Usman.png")),
+    (
+        "MyA/01 Logo M&A.png",
+        include_bytes!("../stickers/MyA/01 Logo M&A.png"),
+    ),
+    (
+        "MyA/02 Súper Crédito.png",
+        include_bytes!("../stickers/MyA/02 Súper Crédito.png"),
+    ),
+    (
+        "MyA/03 Hasta 9 cuotas sin interés.png",
+        include_bytes!("../stickers/MyA/03 Hasta 9 cuotas sin interés.png"),
+    ),
+    (
+        "MyA/04 9 cuotas sin interés azul.png",
+        include_bytes!("../stickers/MyA/04 9 cuotas sin interés azul.png"),
+    ),
+    (
+        "MyA/05 9 cuotas sin interés.png",
+        include_bytes!("../stickers/MyA/05 9 cuotas sin interés.png"),
+    ),
+    (
+        "MyA/06 Aprovechá 9 cuotas.png",
+        include_bytes!("../stickers/MyA/06 Aprovechá 9 cuotas.png"),
+    ),
+    (
+        "MyA/07 Sin interés.png",
+        include_bytes!("../stickers/MyA/07 Sin interés.png"),
+    ),
+    (
+        "MyA/08 Envíos a todo el país.png",
+        include_bytes!("../stickers/MyA/08 Envíos a todo el país.png"),
+    ),
+    (
+        "MyA/09 Atención.png",
+        include_bytes!("../stickers/MyA/09 Atención.png"),
+    ),
+    (
+        "MyA/10 Líder en equipamiento comercial.png",
+        include_bytes!("../stickers/MyA/10 Líder en equipamiento comercial.png"),
+    ),
+    (
+        "MyA/11 Tarjetas.png",
+        include_bytes!("../stickers/MyA/11 Tarjetas.png"),
+    ),
+    (
+        "MyA/12 Tarjetas 2.png",
+        include_bytes!("../stickers/MyA/12 Tarjetas 2.png"),
+    ),
+    (
+        "MyA/13 Naranja X.png",
+        include_bytes!("../stickers/MyA/13 Naranja X.png"),
+    ),
+    (
+        "MyA/14 Visa.png",
+        include_bytes!("../stickers/MyA/14 Visa.png"),
+    ),
+    (
+        "MyA/15 Mastercard.png",
+        include_bytes!("../stickers/MyA/15 Mastercard.png"),
+    ),
+    (
+        "MyA/16 WhatsApp.png",
+        include_bytes!("../stickers/MyA/16 WhatsApp.png"),
+    ),
+    (
+        "MyA/17 Instagram.png",
+        include_bytes!("../stickers/MyA/17 Instagram.png"),
+    ),
+    (
+        "MyA/18 Facebook.png",
+        include_bytes!("../stickers/MyA/18 Facebook.png"),
+    ),
+    (
+        "MyA/19 TikTok.png",
+        include_bytes!("../stickers/MyA/19 TikTok.png"),
+    ),
+    (
+        "MyA/20 YouTube.png",
+        include_bytes!("../stickers/MyA/20 YouTube.png"),
+    ),
+    (
+        "MyA/21 Oferta.png",
+        include_bytes!("../stickers/MyA/21 Oferta.png"),
+    ),
+    (
+        "MyA/22 Nuevo.png",
+        include_bytes!("../stickers/MyA/22 Nuevo.png"),
+    ),
+    (
+        "MyA/23 Últimas unidades.png",
+        include_bytes!("../stickers/MyA/23 Últimas unidades.png"),
+    ),
+    (
+        "MyA/24 Stock disponible.png",
+        include_bytes!("../stickers/MyA/24 Stock disponible.png"),
+    ),
+    (
+        "MyA/25 Consultá por WhatsApp.png",
+        include_bytes!("../stickers/MyA/25 Consultá por WhatsApp.png"),
+    ),
+    (
+        "MyA/26 Entrega inmediata.png",
+        include_bytes!("../stickers/MyA/26 Entrega inmediata.png"),
+    ),
+    (
+        "Marcas/Depaolo.png",
+        include_bytes!("../stickers/Marcas/Depaolo.png"),
+    ),
+    (
+        "Marcas/Frider.png",
+        include_bytes!("../stickers/Marcas/Frider.png"),
+    ),
+    (
+        "Marcas/INR.png",
+        include_bytes!("../stickers/Marcas/INR.png"),
+    ),
+    (
+        "Marcas/Inelro.png",
+        include_bytes!("../stickers/Marcas/Inelro.png"),
+    ),
+    (
+        "Marcas/Morelli.png",
+        include_bytes!("../stickers/Marcas/Morelli.png"),
+    ),
+    (
+        "Marcas/Sol Real.png",
+        include_bytes!("../stickers/Marcas/Sol Real.png"),
+    ),
+    (
+        "Marcas/Teora.png",
+        include_bytes!("../stickers/Marcas/Teora.png"),
+    ),
+    (
+        "Marcas/Usman.png",
+        include_bytes!("../stickers/Marcas/Usman.png"),
+    ),
 ];
 
 /// The shelves the built-in stickers come in, first in this order; a
@@ -171,7 +273,10 @@ fn read_shelf(folder: &Path, shelf: &str) -> Vec<Sticker> {
         .map(|entry| entry.path())
         .filter(|path| is_picture(path))
         .collect();
-    files.sort_by_key(|path| path.file_name().map(|name| name.to_string_lossy().to_lowercase()));
+    files.sort_by_key(|path| {
+        path.file_name()
+            .map(|name| name.to_string_lossy().to_lowercase())
+    });
     files
         .into_iter()
         .map(|path| Sticker {
@@ -187,7 +292,12 @@ fn is_picture(path: &Path) -> bool {
         && path
             .extension()
             .and_then(|ext| ext.to_str())
-            .is_some_and(|ext| matches!(ext.to_ascii_lowercase().as_str(), "png" | "webp" | "jpg" | "jpeg"))
+            .is_some_and(|ext| {
+                matches!(
+                    ext.to_ascii_lowercase().as_str(),
+                    "png" | "webp" | "jpg" | "jpeg"
+                )
+            })
 }
 
 /// "21 Oferta.png" reads "Oferta": the number only orders the shelf.
@@ -196,7 +306,9 @@ fn label_of(path: &Path) -> String {
         .file_stem()
         .map(|stem| stem.to_string_lossy().into_owned())
         .unwrap_or_default();
-    let trimmed = stem.trim_start_matches(|c: char| c.is_ascii_digit()).trim_start();
+    let trimmed = stem
+        .trim_start_matches(|c: char| c.is_ascii_digit())
+        .trim_start();
     if trimmed.is_empty() || trimmed.len() == stem.len() {
         stem.replace(['_', '-'], " ")
     } else {
@@ -216,7 +328,10 @@ mod tests {
             "9 cuotas sin interés azul"
         );
         assert_eq!(label_of(Path::new("Marcas/Sol Real.png")), "Sol Real");
-        assert_eq!(label_of(Path::new("Marcas/stock_disponible.png")), "stock disponible");
+        assert_eq!(
+            label_of(Path::new("Marcas/stock_disponible.png")),
+            "stock disponible"
+        );
     }
 
     #[test]

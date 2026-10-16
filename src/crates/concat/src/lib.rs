@@ -50,8 +50,8 @@ pub use platform::{ExportPublisher, FilePicker, install_export_publisher, instal
 mod panes;
 mod prefs;
 mod presets;
-mod stickers;
 mod source;
+mod stickers;
 mod studio;
 mod sysinfo;
 /// Native Wayland file drops, which winit does not report; see the module.
