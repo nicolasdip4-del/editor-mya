@@ -1,0 +1,14 @@
+id = "mya.descuento"
+name = "MyA · Descuento"
+language = "Latin"
+order = -1
+offsetY = -0.18
+
+[style]
+content = "20% de descuento"
+fontFamily = "Gotham Pro"
+fontWeight = 900
+fontSize = 0.055
+color = "#ffffff"
+background = "#DD1659"
+shadow = false

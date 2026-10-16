@@ -6,7 +6,7 @@ offsetY = 0.32
 
 [style]
 content = "Freezer horizontal 280 L"
-fontFamily = "Montserrat"
+fontFamily = "Gotham Pro"
 fontWeight = 700
 fontSize = 0.045
 color = "#002F60"

@@ -23,7 +23,9 @@ use concat_project::{Command, DocumentSettings, Editor};
 const WIDTH: u32 = 1080;
 const HEIGHT: u32 = 1920;
 const BLUE: &str = "#004F9E";
-const BLUE_DARK: &str = "#002F60";
+const BLUE_DARK: &str = "#003B78";
+/// The brand face; the editor stands Montserrat in where it is missing.
+const BRAND_FONT: &str = "\"Gotham Pro\"";
 
 struct Builder {
     editor: Editor,
@@ -279,8 +281,9 @@ impl Builder {
             TextStyle {
                 content: "{{NOMBRE}}".to_owned(),
                 font_size: 0.05,
-                font_weight: 800.0,
+                font_weight: 700.0,
                 shadow: false,
+                font_family: BRAND_FONT.to_owned(),
                 ..TextStyle::default()
             },
         );
@@ -296,6 +299,7 @@ impl Builder {
                 color: BLUE_DARK.to_owned(),
                 background: "#ffffff".to_owned(),
                 shadow: false,
+                font_family: BRAND_FONT.to_owned(),
                 ..TextStyle::default()
             },
         );
@@ -314,9 +318,10 @@ impl Builder {
         TextStyle {
             content: content.to_owned(),
             font_size: size,
-            font_weight: 800.0,
+            font_weight: 700.0,
             background: BLUE.to_owned(),
             shadow: false,
+            font_family: BRAND_FONT.to_owned(),
             ..TextStyle::default()
         }
     }

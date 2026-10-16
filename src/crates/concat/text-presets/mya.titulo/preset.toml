@@ -6,8 +6,8 @@ offsetY = -0.3
 
 [style]
 content = "Heladera exhibidora"
-fontFamily = "Montserrat"
-fontWeight = 900
+fontFamily = "Gotham Pro"
+fontWeight = 700
 fontSize = 0.065
 color = "#ffffff"
 background = "#004F9E"

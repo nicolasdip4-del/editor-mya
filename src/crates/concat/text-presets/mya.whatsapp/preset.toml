@@ -1,0 +1,14 @@
+id = "mya.whatsapp"
+name = "MyA · WhatsApp"
+language = "Latin"
+order = -1
+offsetY = 0.38
+
+[style]
+content = "Consultá por WhatsApp"
+fontFamily = "Gotham Pro"
+fontWeight = 700
+fontSize = 0.045
+color = "#ffffff"
+background = "#15803D"
+shadow = false

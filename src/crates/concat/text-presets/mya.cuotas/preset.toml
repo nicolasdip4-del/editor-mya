@@ -6,8 +6,8 @@ offsetY = 0.12
 
 [style]
 content = "Hasta 9 cuotas sin interés"
-fontFamily = "Montserrat"
-fontWeight = 800
+fontFamily = "Gotham Pro"
+fontWeight = 700
 fontSize = 0.045
 color = "#ffffff"
 background = "#002F60"

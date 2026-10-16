@@ -238,6 +238,10 @@ impl Covers {
     }
 }
 
+/// Editor MyA: the brand's face, and the bundled one that stands in for it.
+const MYA_FAMILY: &str = "Gotham Pro";
+const MYA_FALLBACK: &str = "Montserrat";
+
 impl Default for Fonts {
     fn default() -> Self {
         Self::new()
@@ -399,6 +403,13 @@ impl Fonts {
         let mut families: Vec<fontdb::Family<'_>> = Vec::new();
         if !family.is_empty() {
             families.push(fontdb::Family::Name(family));
+        }
+        // Editor MyA: the brand face is Gotham Pro, which is licensed and
+        // so not bundled. A machine without it sets MyA titles in the
+        // bundled Montserrat, the nearest geometric sans, rather than in
+        // whatever sans-serif the system has.
+        if family.eq_ignore_ascii_case(MYA_FAMILY) {
+            families.push(fontdb::Family::Name(MYA_FALLBACK));
         }
         families.push(fontdb::Family::SansSerif);
         let query = fontdb::Query {
