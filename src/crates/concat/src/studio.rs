@@ -2133,15 +2133,7 @@ impl Studio {
         let languages = i18n::languages(&host.dirs);
         let recents = projects::list(&host.dirs.config);
         let text_presets = presets::all(&host.dirs);
-        let stickers = stickers::all(&host.dirs)
-            .into_iter()
-            .filter_map(|sticker| {
-                slint::Image::load_from_path(&sticker.path)
-                    .map(|card| (sticker, card))
-                    .map_err(|_| log::warn!("stickers: could not read a card"))
-                    .ok()
-            })
-            .collect();
+        let stickers = Self::load_stickers(&host.dirs);
         let mut studio = Self {
             prefs,
             library: Default::default(),
@@ -3649,6 +3641,65 @@ impl Studio {
             duration: Some(duration),
             name: name.to_owned(),
         })
+    }
+
+    /// Every sticker with its card decoded, for the Stickers page.
+    fn load_stickers(dirs: &concat_host::AppDirs) -> Vec<(Sticker, slint::Image)> {
+        stickers::all(dirs)
+            .into_iter()
+            .filter_map(|sticker| {
+                slint::Image::load_from_path(&sticker.path)
+                    .map(|card| (sticker, card))
+                    .map_err(|_| log::warn!("stickers: could not read a card"))
+                    .ok()
+            })
+            .collect()
+    }
+
+    /// The Stickers page's "Add a sticker" button: pictures from the
+    /// computer, onto the person's own shelf.
+    pub fn import_stickers() {
+        let (title, family) = (t("studio.addStickers"), t("studio.stickerPictures"));
+        crate::host::after_dialog(
+            move || {
+                crate::platform::pick_files(
+                    &title,
+                    Some((family.as_str(), &stickers::PICTURE_EXTENSIONS)),
+                )
+            },
+            |studio, _, _, paths| studio.add_stickers(paths),
+        );
+    }
+
+    /// Copies `paths` onto the own shelf and reads the shelves again. One
+    /// picture is also placed at the playhead, as a card's click would.
+    pub fn add_stickers(&mut self, paths: Vec<std::path::PathBuf>) {
+        let mut added = Vec::new();
+        for path in paths {
+            match stickers::import(&self.host.dirs, &path) {
+                Ok(target) => added.push(target),
+                Err(error) => {
+                    self.notify(
+                        &tf("studio.couldNotImport", &[&path.display(), &error]),
+                        true,
+                    );
+                }
+            }
+        }
+        if added.is_empty() {
+            return;
+        }
+        self.stickers = Self::load_stickers(&self.host.dirs);
+        self.notify(
+            &tf(
+                "studio.stickersAdded",
+                &[&added.len(), &stickers::OWN_SHELF],
+            ),
+            false,
+        );
+        if let [only] = added.as_slice() {
+            self.place_sticker(&only.to_string_lossy());
+        }
     }
 
     /// A picture from the Stickers page, at the playhead: imported like any

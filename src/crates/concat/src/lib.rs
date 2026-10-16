@@ -815,6 +815,7 @@ fn start(project: Option<std::path::PathBuf>, smoke: bool) -> Result<(), slint::
     // Nothing borrowed: the dialog is asked on a turn of its own, and the
     // files it answers with are imported there; see `host::after_dialog`.
     editor.on_library_import_lut(Studio::import_lut);
+    editor.on_library_import_stickers(Studio::import_stickers);
     editor.on_library_reload_packages(on_window!(|state| {
         state.reload_packages(true);
     }));

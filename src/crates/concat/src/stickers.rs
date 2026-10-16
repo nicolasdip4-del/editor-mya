@@ -157,9 +157,16 @@ const BUILT_IN: &[(&str, &[u8])] = &[
     ),
 ];
 
-/// The shelves the built-in stickers come in, first in this order; a
-/// user's own folders follow by name.
-const BUILT_IN_SHELVES: [&str; 2] = ["MyA", "Marcas"];
+/// The shelf a picture added from the computer goes on.
+pub const OWN_SHELF: &str = "Mis stickers";
+
+/// The shelves that come first, in this order: the built-in ones, then the
+/// one pictures added from the computer land on. Other folders follow by
+/// name.
+const BUILT_IN_SHELVES: [&str; 3] = ["MyA", "Marcas", OWN_SHELF];
+
+/// The kinds of picture a shelf takes, by extension.
+pub const PICTURE_EXTENSIONS: [&str; 4] = ["png", "webp", "jpg", "jpeg"];
 
 /// How big a sticker lands, as a fraction of the picture it would fill.
 pub const PLACED_SCALE: f64 = 0.4;
@@ -246,6 +253,33 @@ pub fn lane_for(timeline: &Timeline, start: f64) -> Option<String> {
         .map(|track| track.id.clone())
 }
 
+/// Copies a picture from anywhere onto the [`OWN_SHELF`], keeping its
+/// name - with a number added when the shelf already has one by it - and
+/// returns where it landed.
+pub fn import(dirs: &AppDirs, source: &Path) -> Result<PathBuf, String> {
+    if !is_picture(source) {
+        return Err("no es una imagen PNG, WebP o JPG".to_owned());
+    }
+    let shelf = root(dirs).join(OWN_SHELF);
+    std::fs::create_dir_all(&shelf).map_err(|error| error.to_string())?;
+    let stem = source
+        .file_stem()
+        .map(|stem| stem.to_string_lossy().into_owned())
+        .unwrap_or_else(|| "Sticker".to_owned());
+    let ext = source
+        .extension()
+        .map(|ext| ext.to_string_lossy().to_ascii_lowercase())
+        .unwrap_or_else(|| "png".to_owned());
+    let mut target = shelf.join(format!("{stem}.{ext}"));
+    let mut copy = 2;
+    while target.exists() {
+        target = shelf.join(format!("{stem} {copy}.{ext}"));
+        copy += 1;
+    }
+    std::fs::copy(source, &target).map_err(|error| error.to_string())?;
+    Ok(target)
+}
+
 fn install(root: &Path) {
     for (name, bytes) in BUILT_IN {
         let path = root.join(name);
@@ -292,12 +326,7 @@ fn is_picture(path: &Path) -> bool {
         && path
             .extension()
             .and_then(|ext| ext.to_str())
-            .is_some_and(|ext| {
-                matches!(
-                    ext.to_ascii_lowercase().as_str(),
-                    "png" | "webp" | "jpg" | "jpeg"
-                )
-            })
+            .is_some_and(|ext| PICTURE_EXTENSIONS.contains(&ext.to_ascii_lowercase().as_str()))
 }
 
 /// "21 Oferta.png" reads "Oferta": the number only orders the shelf.
@@ -342,9 +371,17 @@ mod tests {
         std::fs::create_dir_all(root(&dirs).join("Mios")).unwrap();
         std::fs::write(root(&dirs).join("Mios/Promo.png"), BUILT_IN[0].1).unwrap();
 
+        let picked = dir.join("Promo nueva.png");
+        std::fs::write(&picked, BUILT_IN[0].1).unwrap();
+        let first = import(&dirs, &picked).unwrap();
+        let second = import(&dirs, &picked).unwrap();
+        assert_eq!(first.file_name().unwrap(), "Promo nueva.png");
+        assert_eq!(second.file_name().unwrap(), "Promo nueva 2.png");
+        assert!(import(&dirs, &dir.join("notas.txt")).is_err());
+
         let stickers = all(&dirs);
-        assert_eq!(stickers.len(), BUILT_IN.len() + 1);
-        assert_eq!(shelves(&stickers), ["MyA", "Marcas", "Mios"]);
+        assert_eq!(stickers.len(), BUILT_IN.len() + 3);
+        assert_eq!(shelves(&stickers), ["MyA", "Marcas", OWN_SHELF, "Mios"]);
         assert_eq!(stickers[0].label, "Logo M&A");
         let _ = std::fs::remove_dir_all(&dir);
     }

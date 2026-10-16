@@ -1852,6 +1852,8 @@ export component MediaPane inherits Rectangle {
     callback save-template();
     /// Filters page: bring in `.cube` tables as looks of the user's own.
     callback import-lut();
+    /// Stickers page: bring in pictures from the computer as stickers.
+    callback import-stickers();
     /// Effects and Filters pages: read the user's effects folder again.
     callback reload-packages();
 
@@ -2512,15 +2514,21 @@ export component MediaPane inherits Rectangle {
 
                 // The figures. Each card is one shape, placed at the
                 // playhead on a click or dragged onto a lane.
-                if root.tab == 2: HorizontalLayout {
+                if root.tab == 2: VerticalLayout {
                     padding: 8px;
 
+                    // A picture of the person's own - a logo, a promo -
+                    // onto the Mis stickers shelf, from any folder.
+                    ImportButton {
+                        label: I18n.t("mediaPane.addSticker");
+                        glyph: Glyph.import;
+                        clicked => { root.import-stickers(); }
+                    }
+                    Rectangle { height: 8px; }
                     if root.sticker-shelf == 0: ShapeGrid {
-                        horizontal-stretch: 1;
                         placed(shape, label) => { root.add-shape(shape, label); }
                     }
                     if root.sticker-shelf > 0: StickerGrid {
-                        horizontal-stretch: 1;
                         stickers: root.stickers;
                         shelf: root.sticker-shelf - 1;
                         count: root.sticker-counts[root.sticker-shelf - 1];
