@@ -157,7 +157,7 @@ jobs:
       # job at a time and no debug info, to stay inside the runner's
       # memory; the run below finds everything already built.
       - name: Build the tests
-        timeout-minutes: 25
+        timeout-minutes: 60  # Editor MyA: a cold cache (version bump) needs more than 25
         working-directory: src
         env:
           CARGO_PROFILE_DEV_DEBUG: "0"
