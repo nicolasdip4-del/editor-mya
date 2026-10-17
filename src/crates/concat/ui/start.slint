@@ -1095,9 +1095,9 @@ component DesignsPanel inherits Rectangle {
     callback chosen(path: string);
 
     property <length> gap: 14px;
-    property <int> count: Math.max(1, root.designs.length);
-    property <length> card-w: Math.min(132px,
-        (root.width - 48px - (root.count - 1) * root.gap) / root.count);
+    // A fixed size: a poster's width read from the panel's would loop,
+    // the panel being as wide as its posters ask.
+    property <length> card-w: 112px;
 
     border-radius: Theme.r-lg;
     background: Brand.blue;
