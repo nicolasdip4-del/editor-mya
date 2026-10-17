@@ -1,0 +1,16 @@
+Música incluida en Editor MyA
+
+Todas las pistas son de dominio público (CC0 1.0,
+https://creativecommons.org/publicdomain/zero/1.0/), de FreePD.com
+(Kevin MacLeod y colaboradores), tomadas del archivo del sitio en
+https://archive.org/details/freepd (categoría "upbeat"), recortadas a
+75 segundos con fundido final.
+
+Alegre - Advertime.mp3          upbeat/Advertime.mp3
+Alegre - Ciudad.mp3             upbeat/City Sunshine.mp3
+Alegre - Funshine.mp3           upbeat/Funshine.mp3
+Alegre - Ukelele.mp3            upbeat/Happy Whistling Ukulele.mp3
+Enérgica - Motions.mp3          upbeat/Motions.mp3
+Inspiradora - Inspiration.mp3   upbeat/Inspiration.mp3
+Tranquila - Balada.mp3          upbeat/Relaxing Ballad.mp3
+Tranquila - Be Chillin.mp3      upbeat/Be Chillin.mp3

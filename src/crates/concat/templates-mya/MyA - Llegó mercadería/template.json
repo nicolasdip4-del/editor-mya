@@ -247,6 +247,28 @@
       "trackId": "t17",
       "videoEffects": [],
       "volume": 1.0
+    },
+    {
+      "duration": 13.5,
+      "fadeIn": 0.0,
+      "fadeOut": 1.5,
+      "filters": [],
+      "id": "c27",
+      "kind": "audio",
+      "mediaId": "m25",
+      "name": "Alegre - Funshine",
+      "offsetX": 0.0,
+      "offsetY": 0.0,
+      "opacity": 1.0,
+      "preservePitch": true,
+      "rotation": 0.0,
+      "scale": 1.0,
+      "sourceStart": 0.0,
+      "speed": 1.0,
+      "start": 0.0,
+      "trackId": "t26",
+      "videoEffects": [],
+      "volume": 0.25
     }
   ],
   "concat": "0.1.0",
@@ -336,6 +358,28 @@
       "path": "assets/25 Consultá por WhatsApp.png",
       "videoCodec": "png",
       "width": 640
+    },
+    {
+      "audioCodec": "mp3",
+      "audioTracks": [
+        {
+          "channels": 2,
+          "codec": "mp3",
+          "index": 0,
+          "sampleRate": 44100
+        }
+      ],
+      "duration": 75.0,
+      "frameRate": null,
+      "frameRateFraction": null,
+      "hasAudio": true,
+      "height": null,
+      "id": "m25",
+      "kind": "audio",
+      "name": "Alegre - Funshine",
+      "path": "assets/Alegre - Funshine.mp3",
+      "videoCodec": null,
+      "width": null
     }
   ],
   "name": "MyA · Llegó mercadería",
@@ -588,11 +632,38 @@
           "trackId": "t17",
           "videoEffects": [],
           "volume": 1.0
+        },
+        {
+          "duration": 13.5,
+          "fadeIn": 0.0,
+          "fadeOut": 1.5,
+          "filters": [],
+          "id": "c27",
+          "kind": "audio",
+          "mediaId": "m25",
+          "name": "Alegre - Funshine",
+          "offsetX": 0.0,
+          "offsetY": 0.0,
+          "opacity": 1.0,
+          "preservePitch": true,
+          "rotation": 0.0,
+          "scale": 1.0,
+          "sourceStart": 0.0,
+          "speed": 1.0,
+          "start": 0.0,
+          "trackId": "t26",
+          "videoEffects": [],
+          "volume": 0.25
         }
       ],
       "id": "TL1",
       "name": "Timeline 1",
       "tracks": [
+        {
+          "id": "t26",
+          "muted": false,
+          "visible": true
+        },
         {
           "id": "T1",
           "muted": false,
@@ -668,6 +739,11 @@
     }
   ],
   "tracks": [
+    {
+      "id": "t26",
+      "muted": false,
+      "visible": true
+    },
     {
       "id": "T1",
       "muted": false,

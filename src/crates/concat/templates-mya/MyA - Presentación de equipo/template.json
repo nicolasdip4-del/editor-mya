@@ -398,6 +398,28 @@
       "trackId": "t22",
       "videoEffects": [],
       "volume": 1.0
+    },
+    {
+      "duration": 15.5,
+      "fadeIn": 0.0,
+      "fadeOut": 1.5,
+      "filters": [],
+      "id": "c31",
+      "kind": "audio",
+      "mediaId": "m29",
+      "name": "Inspiradora - Inspiration",
+      "offsetX": 0.0,
+      "offsetY": 0.0,
+      "opacity": 1.0,
+      "preservePitch": true,
+      "rotation": 0.0,
+      "scale": 1.0,
+      "sourceStart": 0.0,
+      "speed": 1.0,
+      "start": 0.0,
+      "trackId": "t30",
+      "videoEffects": [],
+      "volume": 0.25
     }
   ],
   "concat": "0.1.0",
@@ -489,6 +511,28 @@
       "path": "assets/25 Consultá por WhatsApp.png",
       "videoCodec": "png",
       "width": 640
+    },
+    {
+      "audioCodec": "mp3",
+      "audioTracks": [
+        {
+          "channels": 2,
+          "codec": "mp3",
+          "index": 0,
+          "sampleRate": 44100
+        }
+      ],
+      "duration": 75.0,
+      "frameRate": null,
+      "frameRateFraction": null,
+      "hasAudio": true,
+      "height": null,
+      "id": "m29",
+      "kind": "audio",
+      "name": "Inspiradora - Inspiration",
+      "path": "assets/Inspiradora - Inspiration.mp3",
+      "videoCodec": null,
+      "width": null
     }
   ],
   "name": "MyA · Presentación de equipo",
@@ -892,11 +936,38 @@
           "trackId": "t22",
           "videoEffects": [],
           "volume": 1.0
+        },
+        {
+          "duration": 15.5,
+          "fadeIn": 0.0,
+          "fadeOut": 1.5,
+          "filters": [],
+          "id": "c31",
+          "kind": "audio",
+          "mediaId": "m29",
+          "name": "Inspiradora - Inspiration",
+          "offsetX": 0.0,
+          "offsetY": 0.0,
+          "opacity": 1.0,
+          "preservePitch": true,
+          "rotation": 0.0,
+          "scale": 1.0,
+          "sourceStart": 0.0,
+          "speed": 1.0,
+          "start": 0.0,
+          "trackId": "t30",
+          "videoEffects": [],
+          "volume": 0.25
         }
       ],
       "id": "TL1",
       "name": "Timeline 1",
       "tracks": [
+        {
+          "id": "t30",
+          "muted": false,
+          "visible": true
+        },
         {
           "id": "T1",
           "muted": false,
@@ -972,6 +1043,11 @@
     }
   ],
   "tracks": [
+    {
+      "id": "t30",
+      "muted": false,
+      "visible": true
+    },
     {
       "id": "T1",
       "muted": false,

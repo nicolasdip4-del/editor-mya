@@ -203,6 +203,28 @@
       "trackId": "t11",
       "videoEffects": [],
       "volume": 1.0
+    },
+    {
+      "duration": 13.5,
+      "fadeIn": 0.0,
+      "fadeOut": 1.5,
+      "filters": [],
+      "id": "c20",
+      "kind": "audio",
+      "mediaId": "m18",
+      "name": "Alegre - Ciudad",
+      "offsetX": 0.0,
+      "offsetY": 0.0,
+      "opacity": 1.0,
+      "preservePitch": true,
+      "rotation": 0.0,
+      "scale": 1.0,
+      "sourceStart": 0.0,
+      "speed": 1.0,
+      "start": 0.0,
+      "trackId": "t19",
+      "videoEffects": [],
+      "volume": 0.25
     }
   ],
   "concat": "0.1.0",
@@ -250,6 +272,28 @@
       "path": "assets/25 Consultá por WhatsApp.png",
       "videoCodec": "png",
       "width": 640
+    },
+    {
+      "audioCodec": "mp3",
+      "audioTracks": [
+        {
+          "channels": 2,
+          "codec": "mp3",
+          "index": 0,
+          "sampleRate": 44100
+        }
+      ],
+      "duration": 75.0,
+      "frameRate": null,
+      "frameRateFraction": null,
+      "hasAudio": true,
+      "height": null,
+      "id": "m18",
+      "kind": "audio",
+      "name": "Alegre - Ciudad",
+      "path": "assets/Alegre - Ciudad.mp3",
+      "videoCodec": null,
+      "width": null
     }
   ],
   "name": "MyA · Video rápido",
@@ -458,11 +502,38 @@
           "trackId": "t11",
           "videoEffects": [],
           "volume": 1.0
+        },
+        {
+          "duration": 13.5,
+          "fadeIn": 0.0,
+          "fadeOut": 1.5,
+          "filters": [],
+          "id": "c20",
+          "kind": "audio",
+          "mediaId": "m18",
+          "name": "Alegre - Ciudad",
+          "offsetX": 0.0,
+          "offsetY": 0.0,
+          "opacity": 1.0,
+          "preservePitch": true,
+          "rotation": 0.0,
+          "scale": 1.0,
+          "sourceStart": 0.0,
+          "speed": 1.0,
+          "start": 0.0,
+          "trackId": "t19",
+          "videoEffects": [],
+          "volume": 0.25
         }
       ],
       "id": "TL1",
       "name": "Timeline 1",
       "tracks": [
+        {
+          "id": "t19",
+          "muted": false,
+          "visible": true
+        },
         {
           "id": "T1",
           "muted": false,
@@ -528,6 +599,11 @@
     }
   ],
   "tracks": [
+    {
+      "id": "t19",
+      "muted": false,
+      "visible": true
+    },
     {
       "id": "T1",
       "muted": false,

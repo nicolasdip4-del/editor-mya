@@ -5,7 +5,7 @@
 //! every document is one the editor reads back.
 //!
 //! ```sh
-//! cargo run -p concat-project --example mya_templates -- <out> <stickers>
+//! cargo run -p concat-project --example mya_templates -- <out> <stickers> <music>
 //! ```
 //!
 //! `<out>` gets one folder per template (`template.json` and `assets/`);
@@ -17,7 +17,9 @@
 use std::path::{Path, PathBuf};
 
 use concat_project::commands::{ClipPatch, NewMedia, TrimEdge};
-use concat_project::model::{MediaKind, ShapeKind, ShapeStyle, TextStyle, VideoSettings};
+use concat_project::model::{
+    AudioTrack, MediaKind, ShapeKind, ShapeStyle, TextStyle, VideoSettings,
+};
 use concat_project::{Command, DocumentSettings, Editor};
 
 const WIDTH: u32 = 1080;
@@ -31,11 +33,12 @@ struct Builder {
     editor: Editor,
     assets: Vec<(String, PathBuf)>,
     stickers: PathBuf,
+    music: PathBuf,
     slots: u32,
 }
 
 impl Builder {
-    fn new(stickers: &Path) -> Builder {
+    fn new(stickers: &Path, music: &Path) -> Builder {
         let mut editor = Editor::new();
         let timeline = editor.project().active().id.clone();
         let video = editor.project().active().video;
@@ -56,6 +59,7 @@ impl Builder {
             editor,
             assets: Vec::new(),
             stickers: stickers.to_path_buf(),
+            music: music.to_path_buf(),
             slots: 0,
         }
     }
@@ -260,6 +264,63 @@ impl Builder {
         );
     }
 
+    /// A track from the music folder under the whole edit, quiet enough to
+    /// sit under a voice, fading out with the closing. The editor stretches
+    /// it with the slot, as it does anything that spans the slot's end.
+    fn soundtrack(&mut self, file: &str, seconds: f64) {
+        let source = self.music.join(file);
+        let bundled = format!("assets/{file}");
+        self.assets.push((bundled.clone(), source));
+        let media = apply(
+            &mut self.editor,
+            Command::AddMedia {
+                item: NewMedia {
+                    path: bundled,
+                    name: Path::new(file)
+                        .file_stem()
+                        .unwrap()
+                        .to_string_lossy()
+                        .into_owned(),
+                    duration: Some(75.0),
+                    kind: MediaKind::Audio,
+                    width: None,
+                    height: None,
+                    frame_rate: None,
+                    frame_rate_fraction: None,
+                    video_codec: None,
+                    audio_codec: Some("mp3".to_owned()),
+                    has_audio: true,
+                    audio_tracks: vec![AudioTrack {
+                        index: 0,
+                        codec: "mp3".to_owned(),
+                        channels: 2,
+                        sample_rate: 44_100,
+                        title: String::new(),
+                        language: String::new(),
+                    }],
+                    origin: None,
+                    color_space: Default::default(),
+                },
+            },
+        )
+        .expect("music media");
+        let lane = apply(&mut self.editor, Command::AddTrack { bottom: true }).expect("lane");
+        let clip = self.clip(&media, &lane, 0.0);
+        self.length(&clip, seconds);
+        apply(
+            &mut self.editor,
+            Command::UpdateClip {
+                clip_id: clip,
+                patch: ClipPatch {
+                    volume: Some(0.25),
+                    fade_in: Some(0.0),
+                    fade_out: Some(1.5),
+                    ..ClipPatch::default()
+                },
+            },
+        );
+    }
+
     /// The closing every template ends on: the blue card, the logo, the
     /// seller's name and WhatsApp, and the call to write.
     fn closing(&mut self, start: f64, seconds: f64) {
@@ -375,8 +436,8 @@ fn png_size(path: &Path) -> (u32, u32) {
     (read(16), read(20))
 }
 
-fn offer(stickers: &Path, out: &Path) {
-    let mut b = Builder::new(stickers);
+fn offer(stickers: &Path, music: &Path, out: &Path) {
+    let mut b = Builder::new(stickers, music);
     let video = b.track();
     b.slot(&video, 0.0, 12.0, "Tu video del producto");
     let top = b.track();
@@ -399,11 +460,12 @@ fn offer(stickers: &Path, out: &Path) {
         0.36,
     );
     b.closing(12.0, 3.5);
+    b.soundtrack("Alegre - Advertime.mp3", 15.5);
     b.write(out, "MyA - Producto en oferta", "MyA · Producto en oferta");
 }
 
-fn showcase(stickers: &Path, out: &Path) {
-    let mut b = Builder::new(stickers);
+fn showcase(stickers: &Path, music: &Path, out: &Path) {
+    let mut b = Builder::new(stickers, music);
     let video = b.track();
     for (index, start) in [0.0, 4.0, 8.0].into_iter().enumerate() {
         b.slot(&video, start, 4.0, &format!("Toma {}", index + 1));
@@ -430,6 +492,7 @@ fn showcase(stickers: &Path, out: &Path) {
     let cards = b.track();
     b.picture("MyA/11 Tarjetas.png", &cards, 8.5, 3.5, 0.7, 0.42);
     b.closing(12.0, 3.5);
+    b.soundtrack("Inspiradora - Inspiration.mp3", 15.5);
     b.write(
         out,
         "MyA - Presentación de equipo",
@@ -437,8 +500,8 @@ fn showcase(stickers: &Path, out: &Path) {
     );
 }
 
-fn arrivals(stickers: &Path, out: &Path) {
-    let mut b = Builder::new(stickers);
+fn arrivals(stickers: &Path, music: &Path, out: &Path) {
+    let mut b = Builder::new(stickers, music);
     let video = b.track();
     b.slot(&video, 0.0, 10.0, "Tu video de la mercadería");
     let top = b.track();
@@ -455,31 +518,37 @@ fn arrivals(stickers: &Path, out: &Path) {
         0.35,
     );
     b.closing(10.0, 3.5);
+    b.soundtrack("Alegre - Funshine.mp3", 13.5);
     b.write(out, "MyA - Llegó mercadería", "MyA · Llegó mercadería");
 }
 
 /// What the start screen's "Video rápido" makes: the seller's video with
 /// the logo in a corner, then the closing card. The editor stretches the
 /// slot to the video's own length.
-fn quick(stickers: &Path, out: &Path) {
-    let mut b = Builder::new(stickers);
+fn quick(stickers: &Path, music: &Path, out: &Path) {
+    let mut b = Builder::new(stickers, music);
     let video = b.track();
     b.slot(&video, 0.0, 10.0, "Tu video");
     let mark = b.track();
     b.picture("MyA/01 Logo M&A.png", &mark, 0.0, 10.0, 0.2, -0.42);
     b.closing(10.0, 3.5);
+    b.soundtrack("Alegre - Ciudad.mp3", 13.5);
     b.write(out, "MyA - Video rápido", "MyA · Video rápido");
 }
 
 fn main() {
     let mut args = std::env::args().skip(1);
-    let (Some(out), Some(stickers)) = (args.next(), args.next()) else {
-        eprintln!("usage: mya_templates <out> <stickers>");
+    let (Some(out), Some(stickers), Some(music)) = (args.next(), args.next(), args.next()) else {
+        eprintln!("usage: mya_templates <out> <stickers> <music>");
         std::process::exit(2);
     };
-    let (out, stickers) = (PathBuf::from(out), PathBuf::from(stickers));
-    offer(&stickers, &out);
-    showcase(&stickers, &out);
-    arrivals(&stickers, &out);
-    quick(&stickers, &out);
+    let (out, stickers, music) = (
+        PathBuf::from(out),
+        PathBuf::from(stickers),
+        PathBuf::from(music),
+    );
+    offer(&stickers, &music, &out);
+    showcase(&stickers, &music, &out);
+    arrivals(&stickers, &music, &out);
+    quick(&stickers, &music, &out);
 }

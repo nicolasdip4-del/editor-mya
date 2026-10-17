@@ -39,6 +39,10 @@ const FILES: &[(&str, &[u8])] = &[
         include_bytes!("../templates-mya/MyA - Llegó mercadería/assets/26 Entrega inmediata.png"),
     ),
     (
+        "MyA - Llegó mercadería/assets/Alegre - Funshine.mp3",
+        include_bytes!("../templates-mya/MyA - Llegó mercadería/assets/Alegre - Funshine.mp3"),
+    ),
+    (
         "MyA - Llegó mercadería/poster.jpg",
         include_bytes!("../templates-mya/MyA - Llegó mercadería/poster.jpg"),
     ),
@@ -58,6 +62,12 @@ const FILES: &[(&str, &[u8])] = &[
         "MyA - Presentación de equipo/assets/25 Consultá por WhatsApp.png",
         include_bytes!(
             "../templates-mya/MyA - Presentación de equipo/assets/25 Consultá por WhatsApp.png"
+        ),
+    ),
+    (
+        "MyA - Presentación de equipo/assets/Inspiradora - Inspiration.mp3",
+        include_bytes!(
+            "../templates-mya/MyA - Presentación de equipo/assets/Inspiradora - Inspiration.mp3"
         ),
     ),
     (
@@ -89,6 +99,10 @@ const FILES: &[(&str, &[u8])] = &[
         ),
     ),
     (
+        "MyA - Producto en oferta/assets/Alegre - Advertime.mp3",
+        include_bytes!("../templates-mya/MyA - Producto en oferta/assets/Alegre - Advertime.mp3"),
+    ),
+    (
         "MyA - Producto en oferta/poster.jpg",
         include_bytes!("../templates-mya/MyA - Producto en oferta/poster.jpg"),
     ),
@@ -103,6 +117,10 @@ const FILES: &[(&str, &[u8])] = &[
     (
         "MyA - Video rápido/assets/25 Consultá por WhatsApp.png",
         include_bytes!("../templates-mya/MyA - Video rápido/assets/25 Consultá por WhatsApp.png"),
+    ),
+    (
+        "MyA - Video rápido/assets/Alegre - Ciudad.mp3",
+        include_bytes!("../templates-mya/MyA - Video rápido/assets/Alegre - Ciudad.mp3"),
     ),
     (
         "MyA - Video rápido/poster.jpg",
